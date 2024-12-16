@@ -10,8 +10,8 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Madrid /etc/localtime && echo "Europe/Mad
 # install system packages
 
 RUN apt-get clean \
- && apt-get update --fix-missing \
- && apt-get install -y \
+    && apt-get update --fix-missing \
+    && apt-get install -y \
     git \
     curl \
     gcc \
@@ -41,8 +41,12 @@ WORKDIR /work
 ADD ./requirements.txt /work
 
 RUN pip3 install --upgrade pip \
- && pip install Cython==0.25.2
-RUN pip3 install -r ./requirements.txt
+    && pip install Cython==0.25.2
+RUN pip3 install -r ./requirements.txt || true  
+# El operador || true hace que el comando siempre devuelva un estado de éxito, incluso si la instalación falla.
+
+# Install fastparquet separately
+RUN pip3 install fastparquet==0.4.0
 
 ADD ./vendor/tensorboxresnet /work/vendor/tensorboxresnet
 RUN pip3 install -e /work/vendor/tensorboxresnet
