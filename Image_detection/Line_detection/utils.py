@@ -24,7 +24,7 @@ def process_image(inference,image_path):
     # Convierte y limpia los puntos si es necesario
     line_dataseries = convert_points(line_dataseries)
     
-    #line_dataseries = elimanate_duplicates(line_dataseries)
+    line_dataseries = elimanate_duplicates(line_dataseries)
     
     return line_dataseries
 
@@ -240,7 +240,7 @@ def convert_points(data):
     return convert
 
 
-def elimanate_duplicates(Line_dataseries, threshold=3):
+def elimanate_duplicates(Line_dataseries, threshold=1):
     #mmdetection use the same length for all the lines in the same chart.
     def similarity_score(line1,line2,threshold):
         comparison = []
