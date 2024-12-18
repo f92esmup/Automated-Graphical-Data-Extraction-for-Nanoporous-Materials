@@ -1,10 +1,13 @@
 {
-    "name": "My Dev imagedetection Container",
-    "image": "nombre-de-tu-imagen:etiqueta",
+    "name": "My Dev iamgedetection Container",
+    "build": {
+        "dockerfile": "../DevDokcerfile",
+        "context": ".."
+    },
     "mounts": [
-        "source=${localWorkspaceFolder}/data,target=/app/data,type=bind"
+        "source=${localWorkspaceFolder}/data,target=/CICProject/data,type=bind"
     ],
-    "workspaceFolder": "/app",
+    "workspaceFolder": "/CICProject",
     "customizations": {
         "vscode": {
             "settings": {

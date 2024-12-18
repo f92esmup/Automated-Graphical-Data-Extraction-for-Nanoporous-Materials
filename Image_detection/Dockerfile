@@ -25,7 +25,6 @@ COPY ./requirements.txt .
 
 # Instala las dependencias listadas en requirements.txt
 RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/cu117/torch_stable.html
-#RUN pip install --no-cache-dir -r requirements.txt
 RUN mim install mmcv-full
 
 # Copia el resto del código de la aplicación al contenedor
