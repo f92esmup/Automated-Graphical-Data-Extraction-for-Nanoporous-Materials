@@ -21,7 +21,7 @@ WORKDIR /app
 RUN mkdir -p /app/data /app/data/images /app/data/Line_output /app/Image_detection /app/Image_detection/weights/
 
 # Copia el archivo requirements.txt al contenedor
-COPY ./Image_detection/requirements.txt .
+COPY ./requirements.txt .
 
 # Instala las dependencias listadas en requirements.txt
 RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/cu117/torch_stable.html
@@ -29,8 +29,8 @@ RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/cu117/to
 RUN mim install mmcv-full
 
 # Copia el resto del código de la aplicación al contenedor
-COPY ./Image_detection ./Image_detection
-COPY app.py .
+COPY . ./Image_detection
+RUN mv ./Image_detection/app.py .
 
 # Añadimos los pesos:
 RUN apt-get update && apt-get install -y wget unzip python3-pip && \

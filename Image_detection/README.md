@@ -19,7 +19,7 @@ conda env create -f environment.yml
 
 Crear la imagen:
 ```bash
-docker build -t imagedetection .
+docker build -t imagedetection ./Image_detection/
 ```
 
 Crear el contenedor:
