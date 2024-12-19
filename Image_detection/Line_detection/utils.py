@@ -240,7 +240,7 @@ def convert_points(data):
     return convert
 
 
-def elimanate_duplicates(Line_dataseries, threshold=1):
+def elimanate_duplicates(Line_dataseries, threshold=3):
     #mmdetection use the same length for all the lines in the same chart.
     def similarity_score(line1,line2,threshold):
         comparison = []
