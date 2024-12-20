@@ -53,7 +53,6 @@ def process_image_with_gemini(image_path, debug):
         model = genai.GenerativeModel(
             model_name="gemini-1.5-pro",
             generation_config=generation_config,
-            #system_instruction="You will be provided with a single image, from which you must manually extract:\n the title, the axis numbers (X and Y) in order as a list, their labels, and the chart legend. Be very concise.",
             system_instruction="""You will be provided with a single image, from which you must extract the following information and format it as a JSON object:
                 - title
                 - x_label (use HTML structure for subscript, e.g., N<sub>L</sub>)
@@ -63,8 +62,15 @@ def process_image_with_gemini(image_path, debug):
                 - legend
                 - x_units
                 - y_units (use HTML structure for subscript, e.g., k<sub>B</sub>T)
+                - lines:
+                    - An array of objects, where each object represents a line in the graph. Each object should contain:
+                        - line_number: Enumerate the lines detected in the image based on their vertical position. Start from the top of the image and assign numbers in order from top to bottom (e.g., "line1", "line2", etc.).
+                        - legend_label: Assign the corresponding legend label to each line. If a line has no legend label, leave this field as an empty string.
+                        - line_type: Classify the line as either "compression" or "decompression" based on the following:
+                            - **Compression**: Lines where the volume decreases and the pressure increases (typically a downward curve in a P-V diagram).
+                            - **Decompression**: Lines where the volume increases and the pressure decreases (typically an upward curve in a P-V diagram).
 
-                The x_numbers and y_numbers should be arrays of numbers.
+                The x_numbers and y_numbers should be arrays of numbers. 
 
                 Do not include any additional text or explanations, only the JSON object."""
         )
