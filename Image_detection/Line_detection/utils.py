@@ -11,7 +11,7 @@ import csv
 from bresenham import bresenham
 
 ##############################################################
-def process_image(inference,image_path, eliminate_duplicates=False):
+def process_image(inference,image_path,mask_kp_sample_interval=10 ,inter_type='linear',eliminate_duplicates=False):
     """
     Procesa una imagen para obtener la serie de datos de línea.
     """
@@ -19,7 +19,7 @@ def process_image(inference,image_path, eliminate_duplicates=False):
     image = cv2.imread(image_path)
     
     # Obtiene la serie de datos de la línea usando la instancia de inferencia
-    line_dataseries = inference.get_dataseries(image)
+    line_dataseries = inference.get_dataseries(image, mask_kp_sample_interval=mask_kp_sample_interval,inter_type=inter_type)
     
     # Convierte y limpia los puntos si es necesario
     line_dataseries = convert_points(line_dataseries)
@@ -74,9 +74,9 @@ def draw_lines_on_image(image_path, line_dataseries, output_dir=None):
         cv2.destroyAllWindows()
 
 
-##############################################################
 
-# Functions for extracting data from images
+
+
 def get_images_path(dir='./'):
     # Lista todos los archivos en el directorio
     files = os.listdir(dir)
@@ -120,6 +120,7 @@ def get_csv_data(Line_dataseries,save_path,name="data"):
 
 
     return
+##############################################################
 
 
 ###############-------------------##################

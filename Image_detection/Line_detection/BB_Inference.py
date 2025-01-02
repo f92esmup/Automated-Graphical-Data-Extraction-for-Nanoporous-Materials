@@ -121,7 +121,7 @@ class LineInference:
         # Retorna la serie de datos interpolada
         return inter_line_ds
 
-    def get_dataseries(self, img, mask_kp_sample_interval=10, return_masks=False):
+    def get_dataseries(self, img, mask_kp_sample_interval=10,inter_type='linear' ,return_masks=False):
         """
         Extrae series de datos de líneas de una imagen de gráficos.
 
@@ -150,7 +150,7 @@ class LineInference:
             line_ds = utils.get_kp(line_mask, interval=mask_kp_sample_interval, x_range=x_range, get_num_lines=False, get_center=True)
             
             # Realiza la interpolación en la serie de datos de línea
-            line_ds = self.interpolate(line_ds, inter_type='linear')
+            line_ds = self.interpolate(line_ds, inter_type=inter_type)
 
             # Añade la serie de datos interpolada a la lista de series de datos predichas
             pred_ds.append(line_ds)
