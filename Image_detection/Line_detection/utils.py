@@ -11,7 +11,7 @@ import csv
 from bresenham import bresenham
 
 ##############################################################
-def process_image(inference,image_path):
+def process_image(inference,image_path, eliminate_duplicates=False):
     """
     Procesa una imagen para obtener la serie de datos de línea.
     """
@@ -24,7 +24,8 @@ def process_image(inference,image_path):
     # Convierte y limpia los puntos si es necesario
     line_dataseries = convert_points(line_dataseries)
     
-    line_dataseries = elimanate_duplicates(line_dataseries)
+    if eliminate_duplicates:
+        line_dataseries = elimanate_duplicates(line_dataseries)
     
     return line_dataseries
 
