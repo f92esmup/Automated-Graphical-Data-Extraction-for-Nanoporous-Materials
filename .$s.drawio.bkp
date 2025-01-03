@@ -202,7 +202,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="OaEpvM6A1vzyGtpTe7x_-1" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;PDFsearch&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="-723" y="680" width="106" height="70" as="geometry" />
+          <mxGeometry x="-318" y="620" width="106" height="70" as="geometry" />
         </mxCell>
         <mxCell id="8p1bjZ13cIJ8n5sk_Pwa-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" edge="1" parent="1" source="8p1bjZ13cIJ8n5sk_Pwa-1" target="8p1bjZ13cIJ8n5sk_Pwa-2">
           <mxGeometry relative="1" as="geometry" />
@@ -251,30 +251,30 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="C0t6DicoCY6sA0NmiH0k-1" value="&lt;div style=&quot;line-height: 19px;&quot;&gt;Search for papers&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="-730" y="850" width="120" height="60" as="geometry" />
+          <mxGeometry x="-325" y="790" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="RxRi0qPpjxtSDfFk8UvK-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="v95SxqSEOBVFNlqnV6BS-1" target="RxRi0qPpjxtSDfFk8UvK-6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="v95SxqSEOBVFNlqnV6BS-1" value="&lt;div style=&quot;line-height: 19px;&quot;&gt;Papers classification&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="-730" y="1160" width="120" height="60" as="geometry" />
+          <mxGeometry x="-325" y="1100" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="RxRi0qPpjxtSDfFk8UvK-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RxRi0qPpjxtSDfFk8UvK-1" target="v95SxqSEOBVFNlqnV6BS-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="RxRi0qPpjxtSDfFk8UvK-1" value="Pypaperbot" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="-735" y="1000" width="130" height="70" as="geometry" />
+          <mxGeometry x="-330" y="940" width="130" height="70" as="geometry" />
         </mxCell>
         <mxCell id="RxRi0qPpjxtSDfFk8UvK-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RxRi0qPpjxtSDfFk8UvK-6" target="qsmerZ9s1Lg47EkLQgFV-1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="-670" y="1379.9999999999998" as="targetPoint" />
+            <mxPoint x="-265" y="1319.9999999999998" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="RxRi0qPpjxtSDfFk8UvK-6" value="Gemini" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="-735" y="1260" width="130" height="70" as="geometry" />
+          <mxGeometry x="-330" y="1200" width="130" height="70" as="geometry" />
         </mxCell>
         <mxCell id="qsmerZ9s1Lg47EkLQgFV-1" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;PDFs&lt;/font&gt;" style="whiteSpace=wrap;html=1;shape=mxgraph.basic.document;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="-720" y="1410" width="100" height="100" as="geometry" />
+          <mxGeometry x="-315" y="1350" width="100" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
