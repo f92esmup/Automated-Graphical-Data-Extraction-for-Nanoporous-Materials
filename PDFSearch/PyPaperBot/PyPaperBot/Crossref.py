@@ -31,6 +31,10 @@ def getPapersInfoFromDOIs(DOI, restrict):
                 paper_found.title = paper["title"][0]
             if "short-container-title" in paper and len(paper["short-container-title"]) > 0:
                 paper_found.jurnal = paper["short-container-title"][0]
+            if "abstract" in paper:
+                paper_found.abstract = paper["abstract"]  # Set abstract if available
+            else:
+                paper_found.abstract = "abstract not found"  # Default message if abstract not found
 
             if restrict is None or restrict != 1:
                 paper_found.setBibtex(getBibtex(paper_found.DOI))
@@ -45,10 +49,9 @@ def getPapersInfo(papers, scholar_search_link, restrict, scholar_results):
     papers_return = []
     num = 1
     for paper in papers:
-        # while num <= scholar_results:
         title = paper['title']
         queries = {'query.bibliographic': title.lower(), 'sort': 'relevance',
-                   "select": "DOI,title,deposited,author,short-container-title"}
+                   "select": "DOI,title,deposited,author,short-container-title,abstract"}
 
         print("Searching paper {} of {} on Crossref...".format(num, len(papers)))
         num += 1
@@ -72,6 +75,10 @@ def getPapersInfo(papers, scholar_search_link, restrict, scholar_results):
                             paper_found.DOI = el["DOI"].strip().lower()
                         if "short-container-title" in el and len(el["short-container-title"]) > 0:
                             paper_found.jurnal = el["short-container-title"][0]
+                        if "abstract" in el:
+                            paper_found.abstract = el["abstract"]  # Set abstract if available
+                        else:
+                            paper_found.abstract = "abstract not found"  # Default message if abstract not found
 
                         if restrict is None or restrict != 1:
                             paper_found.setBibtex(getBibtex(paper_found.DOI))

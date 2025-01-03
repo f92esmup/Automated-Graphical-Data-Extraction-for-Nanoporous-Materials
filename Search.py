@@ -1,28 +1,25 @@
 import os
-import sys
-from PDFSearch.PyPaperBot.PyPaperBot.__main__ import main
+import pandas as pd
+import requests
+from PDFSearch.PyPaperBot.PyPaperBot.__main__ import PyPaperBot
 
-def download_papers(query, scholar_pages, download_dir):
-    # Ensure the download directory exists
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-    
-    # Set the parameters
-    args = [
-        '--query', query,
-        '--scholar-pages', str(scholar_pages),
-        '--dwn-dir', download_dir,
-        '--restrict', '0',  # Download only BibTeX (which includes the abstract)
-        '--use-doi-as-filename', 'False'  # Optional: Use DOI as filename
-    ]
-    
-    # Call the main function with the arguments
-    sys.argv = [''] + args
-    main()
+def get_results_csv(query, scholar_pages, download_dir):
+    # Create an instance of PyPaperBot and set the parameters
+    bot = PyPaperBot(query=query, scholar_pages=scholar_pages, dwn_dir=download_dir, restrict=0)
+    # Call the main method
+    bot.main()
 
-if __name__ == "__main__":
-    query = "Machine learning"
-    scholar_pages = 1
-    download_dir = "./data/papers2/"
-    
-    download_papers(query, scholar_pages, download_dir)
+def download_pdfs(download_dir, dois):
+    # Create an instance of PyPaperBot to download PDFs
+    bot = PyPaperBot(dwn_dir=download_dir, restrict=1, DOIs=dois)
+    # Call the main method
+    bot.main()
+
+query = "Machine learning"
+scholar_pages = "1-1"
+download_dir = "./data/papers2/"
+get_results_csv(query, scholar_pages, download_dir)
+
+# Assuming the DOIs are stored in a CSV file
+dois = pd.read_csv(os.path.join(download_dir, "result.csv"))["DOI"].tolist()
+download_pdfs(download_dir, dois)

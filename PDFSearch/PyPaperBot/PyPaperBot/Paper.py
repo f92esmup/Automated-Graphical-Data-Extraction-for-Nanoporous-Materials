@@ -25,6 +25,7 @@ class Paper:
         self.cites_num = None
         self.bibtex = None
         self.DOI = None
+        self.abstract = None  # Add abstract attribute
 
         self.downloaded = False
         self.downloadedFrom = 0  # 1-SciHub 2-scholar
@@ -54,6 +55,8 @@ class Paper:
             self.jurnal = x[0]["journal"].replace("\\", "") if "journal" in x[0] else None
             if self.jurnal is None:
                 self.jurnal = x[0]["publisher"].replace("\\", "") if "publisher" in x[0] else None
+            if 'abstract' in x[0]:
+                self.abstract = x[0]["abstract"]  # Extract abstract if available
         except:
             pass
 
@@ -64,7 +67,7 @@ class Paper:
         # Define the column names
         columns = ["Name", "Scholar Link", "DOI", "Bibtex", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
-                   "Downloaded from", "Authors"]
+                   "Downloaded from", "Authors", "Abstract"]
 
         # Prepare data to populate the DataFrame
         data = []
@@ -93,7 +96,8 @@ class Paper:
                 "Journal": p.jurnal,
                 "Downloaded": p.downloaded,
                 "Downloaded from": dwn_from,
-                "Authors": p.authors
+                "Authors": p.authors,
+                "Abstract": p.abstract  # Include abstract in the report
             })
 
         # Create a DataFrame and write to CSV
