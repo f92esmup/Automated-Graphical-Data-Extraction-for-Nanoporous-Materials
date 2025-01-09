@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import requests
-from PDFSearch.PyPaperBot.PyPaperBot.__main__ import PyPaperBot
+from PDFSearch.PyPaperBot.__main__ import PyPaperBot
 
 def main():
     query = "Machine learning"
