@@ -5,25 +5,34 @@ from .HTMLparsers import getSchiHubPDF, SciHubUrls
 import random
 from .NetInfo import NetInfo
 from .Utils import URLjoin
+from requests.exceptions import ConnectionError, Timeout
 
 
-def setSciHubUrl():
+def setSciHubUrl(scihub_mirror=None):
+    if scihub_mirror:
+        print(f"Using specified Sci-Hub mirror: {scihub_mirror}")
+        NetInfo.SciHub_URL = scihub_mirror
+        return
+
     print("Searching for a sci-hub mirror")
-    r = requests.get(NetInfo.SciHub_URLs_repo, headers=NetInfo.HEADERS)
-    links = SciHubUrls(r.text)
+    try:
+        r = requests.get(NetInfo.SciHub_URLs_repo, headers=NetInfo.HEADERS, timeout=10)
+        r.raise_for_status()
+        links = SciHubUrls(r.text)
 
-    for l in links:
-        try:
-            print("Trying with {}...".format(l))
-            r = requests.get(l, headers=NetInfo.HEADERS)
-            if r.status_code == 200:
-                NetInfo.SciHub_URL = l
-                break
-        except:
-            pass
-    else:
-        print(
-            "\nNo working Sci-Hub instance found!\nIf in your country Sci-Hub is not available consider using a VPN or a proxy\nYou can use a specific mirror mirror with the --scihub-mirror argument")
+        for l in links:
+            try:
+                print("Trying with {}...".format(l))
+                r = requests.get(l, headers=NetInfo.HEADERS, timeout=10)
+                if r.status_code == 200:
+                    NetInfo.SciHub_URL = l
+                    break
+            except (ConnectionError, Timeout) as e:
+                print(f"Connection error with {l}: {e}")
+                continue
+    except (ConnectionError, Timeout) as e:
+        print(f"Failed to retrieve Sci-Hub URLs: {e}")
+        print("\nNo working Sci-Hub instance found!\nIf in your country Sci-Hub is not available consider using a VPN or a proxy\nYou can use a specific mirror with the --scihub-mirror argument")
         NetInfo.SciHub_URL = "https://sci-hub.st"
 
 
@@ -56,7 +65,7 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
 
     print("\nUsing Sci-Hub mirror {}".format(NetInfo.SciHub_URL))
     print("Using Sci-DB mirror {}".format(NetInfo.SciDB_URL))
-    print("You can use --scidb-mirror and --scidb-mirror to specify your're desired mirror URL\n")
+    print("You can use scidb-mirror and scidb-mirror to specify your're desired mirror URL\n")
 
     num_downloaded = 0
     paper_number = 1
@@ -101,7 +110,8 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
 
                         if 'application/pdf' in content_type or "application/octet-stream" in content_type:
                             paper_files.append(saveFile(pdf_dir, r.content, p, dwn_source))
-                except Exception:
+                except Exception as e:
+                    print(f"Failed to download {p.title} from {url}: {e}")
                     pass
 
                 failed += 1

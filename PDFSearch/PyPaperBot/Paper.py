@@ -89,7 +89,7 @@ class Paper:
                 "Name": p.title,
                 "Scholar Link": p.scholar_link,
                 "DOI": p.DOI,
-                "Bibtex": bibtex_found,
+                #"Bibtex": bibtex_found,
                 "PDF Name": pdf_name,
                 "Year": p.year,
                 "Scholar page": p.scholar_page,

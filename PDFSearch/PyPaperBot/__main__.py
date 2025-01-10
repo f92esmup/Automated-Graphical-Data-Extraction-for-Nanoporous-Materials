@@ -118,7 +118,7 @@ class PyPaperBot:
 
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
 
-        Paper.generateReport(to_download, self.dwn_dir + "result.csv")
+        Paper.generateReport(to_download, self.dwn_dir + "search.csv")
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):
