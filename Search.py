@@ -1,6 +1,3 @@
-import os
-import pandas as pd
-import requests
 from PDFSearch.PyPaperBot.__main__ import PyPaperBot
 
 def get_results_csv(query, scholar_pages, download_dir):
