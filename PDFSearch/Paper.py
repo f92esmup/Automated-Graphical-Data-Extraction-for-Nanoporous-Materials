@@ -67,7 +67,7 @@ class Paper:
 
     def generateReport(papers, path, dwn_dir, Description):
         # Define the column names
-        columns = ["Name", "Scholar Link", "Bibtex", "PDF Name",
+        columns = ["Name", "Scholar Link", "DOI", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
                    "Downloaded from", "Authors", "Abstract", "Description"]
 
@@ -94,21 +94,24 @@ class Paper:
                 except:
                     pass
             
+            # Replace spaces with _-_ in authors' names
+            if p.authors:
+                p.authors = p.authors.replace(';', '_-_')
 
 
             # Append row data as a dictionary
             data.append({
-                "Name": p.title,
-                "Scholar Link": p.scholar_link,
-                "DOI": p.DOI,
+                "Name": p.title if p.title is not None else "not found",
+                "Scholar Link": p.scholar_link if p.scholar_link is not None else "not found",
+                "DOI": p.DOI if p.DOI is not None else "not found",
                 #"Bibtex": bibtex_found,
-                "PDF Name": pdf_name,
-                "Year": p.year,
-                "Scholar page": p.scholar_page,
-                "Journal": p.jurnal,
+                "PDF Name": pdf_name if pdf_name is not None else "not found",
+                "Year": p.year if p.year is not None else "not found",
+                "Scholar page": p.scholar_page if p.scholar_page is not None else "not found",
+                "Journal": p.jurnal if p.jurnal is not None else "not found",
                 "Downloaded": p.downloaded,
-                "Downloaded from": dwn_from,
-                "Authors": p.authors,
+                "Downloaded from": dwn_from if dwn_from is not None else "not found",
+                "Authors": p.authors if p.authors is not None else "not found",
                 "Abstract": p.abstract,  # Include abstract in the report
                 "Description": Paper.filter_with_gemini(p.abstract, Description)
             })
@@ -166,4 +169,6 @@ class Paper:
             for page_num in range(num_pages):
                 page = reader.pages[page_num]
                 text += page.extract_text()
+
+            text = text.replace('\n', ' ').replace('\r', ' ')
         return text
