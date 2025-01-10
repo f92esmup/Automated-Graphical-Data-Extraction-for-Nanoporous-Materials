@@ -6,7 +6,7 @@ import time
 import requests
 from .Paper import Paper
 from .PapersFilters import filterJurnals, filter_min_date, similarStrings
-from .Downloader import downloadPapers
+from .Downloader import downloadPapers, download_arxiv_papers
 from .Scholar import ScholarPapersInfo
 from .Crossref import getPapersInfoFromDOIs
 from .proxy import proxy
@@ -117,9 +117,10 @@ class PyPaperBot:
             if self.num_limit_type is not None and self.num_limit_type == 1:
                 to_download.sort(key=lambda x: int(x.cites_num) if x.cites_num is not None else 0, reverse=True)
 
+            result = download_arxiv_papers(self.query, max_results=self.num_limit, start_year=self.min_date, end_year=None)
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
-
-        Paper.generateReport(to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description)
+            
+        Paper.generateReport(result, to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):

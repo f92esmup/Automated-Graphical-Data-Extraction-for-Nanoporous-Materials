@@ -65,7 +65,7 @@ class Paper:
     def canBeDownloaded(self):
         return self.DOI is not None or self.scholar_link is not None
 
-    def generateReport(papers, path, dwn_dir, Description):
+    def generateReport(result, papers, path, dwn_dir, Description):
         # Define the column names
         columns = ["Name", "Scholar Link", "DOI", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
@@ -87,7 +87,7 @@ class Paper:
                 dwn_from = "Scholar"
 
             # Extract two pages if abstract is not found
-            if p.abstract is None or p.abstract.lower() == 'abstract not found':
+            if p.abstract is None or len(p.abstract.lower()) <= 50:
                 try:
                     pdf_path = dwn_dir + p.getFileName()
                     p.abstract = Paper.extract_text_from_first_two_pages(pdf_path)
@@ -116,7 +116,25 @@ class Paper:
                 "Description": Paper.filter_with_gemini(p.abstract, Description)
             })
 
-    
+        
+        for r in result:
+
+            # Append row data as a dictionary
+            data.append({
+                "Name": r["name"] if r["name"] is not None else "not found",
+                "Scholar Link": "not found",  # No scholar link in result
+                "DOI": r["doi"] if r["doi"] is not None else "not found",
+                "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
+                "Year": r["year"] if r["year"] is not None else "not found",
+                "Scholar page": "not found",  # No scholar page in result
+                "Journal": r["journal"] if r["journal"] is not None else "not found",
+                "Downloaded": True,  # Assuming downloaded
+                "Downloaded from": "Arxiv",  # Downloaded from Arxiv
+                "Authors": r["authors"] if r["authors"] is not None else "not found",
+                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
+                "Description": Paper.filter_with_gemini(r["abstract"], Description)
+            })
+
 
         # Create a DataFrame and write to CSV
         df = pd.DataFrame(data, columns=columns)

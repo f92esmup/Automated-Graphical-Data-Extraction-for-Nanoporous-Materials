@@ -1,5 +1,6 @@
 from os import path
 import requests
+import arxiv
 import time
 from .HTMLparsers import getSchiHubPDF, SciHubUrls
 import random
@@ -114,3 +115,43 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
                     pass
 
                 failed += 1
+
+
+def download_arxiv_papers(query, max_results=1, start_year=None, end_year=None):
+    # Construir la consulta con filtros adicionales
+    if max_results==None:
+        max_results = 5
+
+        
+    args = []
+
+    if start_year or end_year:
+        query_parts = [query]
+        if start_year:
+            query_parts.append(f"submittedDate:[{start_year}0101 TO {end_year}1231]")
+        query = " AND ".join(query_parts)
+
+    search = arxiv.Search(
+        query=query,
+        max_results=max_results,
+        sort_by=arxiv.SortCriterion.SubmittedDate
+    )
+
+    client = arxiv.Client()
+    for result in client.results(search):
+        paper_info = {
+            "name": result.title,
+            "doi": result.doi if result.doi else "N/A",
+            "pdf_name": result.pdf_url.split('/')[-1] + ".pdf",
+            "year": result.published.year,
+            "journal": result.journal_ref if result.journal_ref else "N/A",
+            "authors": ', '.join(author.name for author in result.authors),
+            "abstract": result.summary
+        }
+
+        args.append(paper_info)
+
+        result.download_pdf(dirpath='./data/papers2/')
+
+    return args
+
