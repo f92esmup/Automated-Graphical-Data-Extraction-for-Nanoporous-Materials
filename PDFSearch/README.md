@@ -4,7 +4,7 @@
 ### Join the [Telegram](https://t.me/pypaperbotdatawizards) channel to stay updated, report bugs, or request custom data mining scripts.
 ---
 
-# PyPaperBot
+# PyPaperBot MODIFIED
 
 PyPaperBot is a Python tool for **downloading scientific papers and bibtex** using Google Scholar, Crossref, SciHub, and SciDB.
 The tool tries to download papers from different sources such as PDF provided by Scholar, Scholar related links, and Scihub.

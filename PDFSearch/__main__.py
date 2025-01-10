@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 class PyPaperBot:
     def __init__(self, query=None, scholar_results=10, scholar_pages=1, dwn_dir=None, proxy_list=None, min_date=None, 
                  num_limit=None, num_limit_type=None, filter_jurnal_file=None, restrict=None, DOIs=None, SciHub_URL=None, 
-                 chrome_version=None, cites=None, use_doi_as_filename=False, SciDB_URL=None, skip_words=None, single_proxy=None, doi_file=None):
+                 chrome_version=None, cites=None, use_doi_as_filename=False, SciDB_URL=None, skip_words=None, single_proxy=None, doi_file=None, description=None):
         # Query to make on Google Scholar or Google Scholar page link
         self.query = query
         # Number of scholar results to be downloaded when --scholar-pages=1
@@ -56,6 +56,7 @@ class PyPaperBot:
         # File .txt containing the list of paper's DOIs to download
         self.doi_file = doi_file
 
+        self.description = description
     def checkVersion(self):
         try:
             print("PyPaperBot v" + __version__)
@@ -118,7 +119,7 @@ class PyPaperBot:
 
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
 
-        Paper.generateReport(to_download, self.dwn_dir + "search.csv")
+        Paper.generateReport(to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):

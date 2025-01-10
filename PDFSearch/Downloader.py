@@ -111,7 +111,6 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
                         if 'application/pdf' in content_type or "application/octet-stream" in content_type:
                             paper_files.append(saveFile(pdf_dir, r.content, p, dwn_source))
                 except Exception as e:
-                    print(f"Failed to download {p.title} from {url}: {e}")
                     pass
 
                 failed += 1

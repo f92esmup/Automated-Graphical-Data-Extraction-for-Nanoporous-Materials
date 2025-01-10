@@ -9,6 +9,8 @@ import re
 import pandas as pd
 import urllib.parse
 
+import google.generativeai as genai
+import PyPDF2
 
 class Paper:
 
@@ -63,11 +65,11 @@ class Paper:
     def canBeDownloaded(self):
         return self.DOI is not None or self.scholar_link is not None
 
-    def generateReport(papers, path):
+    def generateReport(papers, path, dwn_dir, Description):
         # Define the column names
-        columns = ["Name", "Scholar Link", "DOI", "Bibtex", "PDF Name",
+        columns = ["Name", "Scholar Link", "Bibtex", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
-                   "Downloaded from", "Authors", "Abstract"]
+                   "Downloaded from", "Authors", "Abstract", "Description"]
 
         # Prepare data to populate the DataFrame
         data = []
@@ -84,6 +86,16 @@ class Paper:
             elif p.downloadedFrom == 3:
                 dwn_from = "Scholar"
 
+            # Extract two pages if abstract is not found
+            if p.abstract is None or p.abstract.lower() == 'abstract not found':
+                try:
+                    pdf_path = dwn_dir + p.getFileName()
+                    p.abstract = Paper.extract_text_from_first_two_pages(pdf_path)
+                except:
+                    pass
+            
+
+
             # Append row data as a dictionary
             data.append({
                 "Name": p.title,
@@ -97,8 +109,11 @@ class Paper:
                 "Downloaded": p.downloaded,
                 "Downloaded from": dwn_from,
                 "Authors": p.authors,
-                "Abstract": p.abstract  # Include abstract in the report
+                "Abstract": p.abstract,  # Include abstract in the report
+                "Description": Paper.filter_with_gemini(p.abstract, Description)
             })
+
+    
 
         # Create a DataFrame and write to CSV
         df = pd.DataFrame(data, columns=columns)
@@ -117,3 +132,38 @@ class Paper:
         f = open(path, "w", encoding="latin-1", errors="ignore")
         f.write(str(content))
         f.close()
+    
+    def filter_with_gemini(text, Description):
+    # Create the model
+        generation_config = {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 8192,
+        "response_mime_type": "text/plain",
+        }
+
+        model = genai.GenerativeModel(
+        model_name="gemini-1.5-pro",
+        generation_config=generation_config,
+        system_instruction= "Your task is to evaluate whether a given text matches exactly with the following description:" + Description + "You must respond only with 'YES' if the text fully matches the description or 'NO' if it does not. Do not include explanations, additional comments, or modify the response format."
+        )
+
+        chat_session = model.start_chat(
+        history=[
+        ]
+        )
+
+        response = chat_session.send_message(text)
+
+        return response.text.strip().lower() == 'yes'
+    
+    def extract_text_from_first_two_pages(pdf_path):
+        with open(pdf_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            text = ""
+            num_pages = min(2, len(reader.pages))
+            for page_num in range(num_pages):
+                page = reader.pages[page_num]
+                text += page.extract_text()
+        return text

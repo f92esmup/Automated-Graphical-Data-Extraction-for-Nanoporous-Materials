@@ -180,13 +180,13 @@
           <mxGeometry x="170" y="670" width="230" height="40" as="geometry" />
         </mxCell>
         <mxCell id="OZcwbLKxRhCMtOAZGxJ_-3" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-          <mxGeometry x="393.5" y="150" width="45" height="50" as="geometry" />
+          <mxGeometry x="400" y="150" width="45" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram id="MBh9oQZV5r56qwPftR0L" name="PDFSearch">
-    <mxGraphModel dx="3244" dy="1158" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3017" dy="993" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -266,14 +266,6 @@
         <mxCell id="aMAjoIRDYXekRPGYL1ab-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aMAjoIRDYXekRPGYL1ab-3" target="aMAjoIRDYXekRPGYL1ab-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="L0iATLsqpjQoK6zty4Dw-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="aMAjoIRDYXekRPGYL1ab-3" target="aMAjoIRDYXekRPGYL1ab-19">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="-940" y="1630" />
-              <mxPoint x="-940" y="2040" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-3" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;List of papers and its information (title, DOI, abstract...)&lt;/font&gt;" style="whiteSpace=wrap;html=1;shape=mxgraph.basic.document;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="-562.5" y="1550" width="153" height="160" as="geometry" />
         </mxCell>
@@ -283,7 +275,7 @@
         <mxCell id="aMAjoIRDYXekRPGYL1ab-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="aMAjoIRDYXekRPGYL1ab-7" target="aMAjoIRDYXekRPGYL1ab-16" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="aMAjoIRDYXekRPGYL1ab-7" value="&lt;font style=&quot;font-size: 21px;&quot;&gt;Abstract found ?&amp;nbsp;&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;dashed=1;" parent="1" vertex="1">
+        <mxCell id="aMAjoIRDYXekRPGYL1ab-7" value="&lt;font style=&quot;font-size: 21px;&quot;&gt;Abstract found ?&amp;nbsp;&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="-585.75" y="1790" width="199.5" height="170" as="geometry" />
         </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aMAjoIRDYXekRPGYL1ab-10" target="RxRi0qPpjxtSDfFk8UvK-6" edge="1">
@@ -294,13 +286,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="aMAjoIRDYXekRPGYL1ab-10" value="Yes" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;dashed=1;" parent="1" vertex="1">
+        <mxCell id="aMAjoIRDYXekRPGYL1ab-10" value="Yes" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" parent="1" vertex="1">
           <mxGeometry x="-243" y="1845" width="100" height="60" as="geometry" />
         </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aMAjoIRDYXekRPGYL1ab-16" target="aMAjoIRDYXekRPGYL1ab-19" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="aMAjoIRDYXekRPGYL1ab-16" value="NO" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;dashed=1;" parent="1" vertex="1">
+        <mxCell id="aMAjoIRDYXekRPGYL1ab-16" value="NO" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" parent="1" vertex="1">
           <mxGeometry x="-793" y="1845" width="100" height="60" as="geometry" />
         </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aMAjoIRDYXekRPGYL1ab-19" target="RxRi0qPpjxtSDfFk8UvK-6" edge="1">
@@ -322,12 +314,6 @@
         </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-37" value="True or false&lt;div&gt;response&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
           <mxGeometry x="-557.5" y="2469.9999999999995" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="qAUa-sNh5z41RXDZMCZw-1" value="" style="endArrow=none;html=1;rounded=0;fillColor=#f8cecc;strokeColor=#FF0000;strokeWidth=3;" edge="1" parent="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="-773" y="1990" as="sourcePoint" />
-            <mxPoint x="-160.25" y="1980" as="targetPoint" />
-          </mxGeometry>
         </mxCell>
         <mxCell id="L0iATLsqpjQoK6zty4Dw-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="C0t6DicoCY6sA0NmiH0k-1" target="L0iATLsqpjQoK6zty4Dw-1">
           <mxGeometry relative="1" as="geometry">

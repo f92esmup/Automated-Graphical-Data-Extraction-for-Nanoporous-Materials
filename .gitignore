@@ -1,6 +1,5 @@
 Image_detection/weights/
-data/Line_output/
-data/papers2/
+data/
 my_model/data/
 my_model/result/
 my_model/checkpoint/

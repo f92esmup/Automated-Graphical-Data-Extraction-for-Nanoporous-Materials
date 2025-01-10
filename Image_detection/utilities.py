@@ -51,7 +51,7 @@ def process_image_with_gemini(image_path, debug):
         }
 
         model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash-exp",
+            model_name="gemini-1.5-pro",
             generation_config=generation_config,
             system_instruction="""You will be provided with a single image, from which you must extract the following information and format it as a JSON object:
                 - title
