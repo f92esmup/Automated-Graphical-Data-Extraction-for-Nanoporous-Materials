@@ -11,6 +11,7 @@ import urllib.parse
 
 import google.generativeai as genai
 import PyPDF2
+import os
 
 class Paper:
 
@@ -65,7 +66,7 @@ class Paper:
     def canBeDownloaded(self):
         return self.DOI is not None or self.scholar_link is not None
 
-    def generateReport(result, papers, path, dwn_dir, Description):
+    def generateReport(result, papers, path, dwn_dir, Description, eliminate_false_values=False):
         # Define the column names
         columns = ["Name", "Scholar Link", "DOI", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
@@ -118,7 +119,8 @@ class Paper:
 
         
         for r in result:
-
+            if r['pdf_name'] is not None:
+                r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
             # Append row data as a dictionary
             data.append({
                 "Name": r["name"] if r["name"] is not None else "not found",
@@ -135,6 +137,18 @@ class Paper:
                 "Description": Paper.filter_with_gemini(r["abstract"], Description)
             })
 
+
+        # Eliminate duplicates or False values
+        if eliminate_false_values:
+            new_data = []
+            for row in data:
+                if row["Description"] != False:
+                    new_data.append(row)
+                else:
+                    pdf_path = os.path.join(dwn_dir, row["PDF Name"])
+                    if os.path.exists(pdf_path):
+                        os.remove(pdf_path)
+            data = new_data
 
         # Create a DataFrame and write to CSV
         df = pd.DataFrame(data, columns=columns)

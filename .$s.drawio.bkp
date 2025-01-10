@@ -258,14 +258,6 @@
         <mxCell id="aMAjoIRDYXekRPGYL1ab-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aMAjoIRDYXekRPGYL1ab-3" target="aMAjoIRDYXekRPGYL1ab-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="62shiTR-NKBqVjVEO728-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF0000;strokeWidth=2;" parent="1" source="aMAjoIRDYXekRPGYL1ab-3" target="aMAjoIRDYXekRPGYL1ab-19" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="-950" y="1630" />
-              <mxPoint x="-950" y="2040" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
         <mxCell id="aMAjoIRDYXekRPGYL1ab-3" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;List of papers and its information (title, DOI, abstract...)&lt;/font&gt;" style="whiteSpace=wrap;html=1;shape=mxgraph.basic.document;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="-562.5" y="1550" width="153" height="160" as="geometry" />
         </mxCell>
@@ -361,6 +353,14 @@
             <Array as="points">
               <mxPoint x="-486" y="1210" />
               <mxPoint x="-20" y="1210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KegfoxbJBw-pFxcHZjXG-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="L0iATLsqpjQoK6zty4Dw-1" target="aMAjoIRDYXekRPGYL1ab-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="1040" />
+              <mxPoint x="350" y="2840" />
             </Array>
           </mxGeometry>
         </mxCell>

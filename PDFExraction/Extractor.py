@@ -27,6 +27,6 @@ def extract_images_from_pdf(pdf_path, output_folder):
 
 # Ejemplo de uso
 pdf_path = './data/papers/reference.pdf'
-output_folder = './output'
+output_folder = './data/output'
 clear_output_folder(output_folder)
 extract_images_from_pdf(pdf_path, output_folder)
