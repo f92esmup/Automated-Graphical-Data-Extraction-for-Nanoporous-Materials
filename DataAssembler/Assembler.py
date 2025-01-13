@@ -7,20 +7,24 @@ def run_assembler():
     df = pd.DataFrame(columns=columns)
 
     # Recorrer los directorios de imágenes
-    data_dir = './data/imagenes'
+    data_dir = './data/images'
+    rows = []
     for paper_dir in os.listdir(data_dir):
         paper_path = os.path.join(data_dir, paper_dir)
         if os.path.isdir(paper_path):
             for image in os.listdir(paper_path):
                 image_path = os.path.join(paper_path, image)
                 if os.path.isfile(image_path):
-                    df = df.append({
+                    rows.append({
                         'graph': image,
                         'properties': None,
                         'paper': f"{paper_dir}.pdf",
                         'errors': None,
                         'confidence_score': None
-                    }, ignore_index=True)
+                    })
+
+    # Convertir la lista de filas en un DataFrame y concatenar
+    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
 
     # Guardar el DataFrame en un archivo CSV
     df.to_csv('./data/dataset.csv', index=False)
