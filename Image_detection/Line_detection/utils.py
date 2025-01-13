@@ -33,6 +33,10 @@ def save_and_plot_data(line_dataseries, image_path,plot=False, save_path='./data
     """
     Guarda la serie de datos en un archivo CSV y genera un gráfico.
     """
+    # Comprueba si el directorio save_path existe y si no, lo crea
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+        
     # Obtiene el nombre del archivo sin la extensión
     name = image_path.split('/')[-1].split('.')[0]
     

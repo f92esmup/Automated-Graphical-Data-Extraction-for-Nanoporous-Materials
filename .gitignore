@@ -1,5 +1,5 @@
 Image_detection/weights/
 data/
-my_model/data/
-my_model/result/
-my_model/checkpoint/
+model/data/
+model/result/
+model/checkpoint/

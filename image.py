@@ -108,7 +108,7 @@ for image_name in tqdm(os.listdir(input_dir), desc="Processing images"):
         inference = LineInference(config=LF_config_path, ckpt=LF_weights_path, device=device)
         
         # Process the image and get the line data series
-        line_dataseries = process_image(inference, image_path)
+        line_dataseries = process_image(inference,image_path,mask_kp_sample_interval=10 ,inter_type='linear',eliminate_duplicates=True)        
         if debug: print(f"Line data series processed for {image_name}")
 
         # Rescale the line data series
@@ -119,5 +119,6 @@ for image_name in tqdm(os.listdir(input_dir), desc="Processing images"):
         if debug: print(f"Data series saved and plotted for {image_name}")
     except Exception as e:
         print(f"Error processing {image_name}: {e}")
+        pass
 
 if debug: print("Image processing completed.")

@@ -1,34 +1,41 @@
-import arxiv
+import requests
 
-def download_arxiv_papers(query, max_results=1, start_year=None, end_year=None):
+def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
     # Construir la consulta con filtros adicionales
-    args = {}
+    args = []
 
-    if start_year or end_year:
-        query_parts = [query]
-        if start_year:
-            query_parts.append(f"submittedDate:[{start_year}0101 TO {end_year}1231]")
-        query = " AND ".join(query_parts)
+    base_url = "http://ieeexploreapi.ieee.org/api/v1/search/articles"
+    api_key = " xd94qvvrbkhnuckszr544znp"  # Reemplaza con tu clave de API de IEEE Xplore
 
-    search = arxiv.Search(
-        query=query,
-        max_results=max_results,
-        sort_by=arxiv.SortCriterion.SubmittedDate
-    )
+    params = {
+        "apikey": api_key,
+        "querytext": query,
+        "max_records": max_results,
+        "start_year": start_year,
+        "end_year": end_year,
+        "format": "json"
+    }
 
-    client = arxiv.Client()
-    for result in client.results(search):
-        name = result.title
-        doi = result.doi if result.doi else "N/A"
-        pdf_name = result.pdf_url.split('/')[-1] + ".pdf"
-        year = result.published.year
-        journal = result.journal_ref if result.journal_ref else "N/A"
-        authors = ', '.join(author.name for author in result.authors)
-        abstract = result.summary
+    response = requests.get(base_url, params=params)
+    data = response.json()
+
+    for article in data.get('articles', []):
+        name = article.get('title', 'N/A')
+        doi = article.get('doi', 'N/A')
+        pdf_url = article.get('pdf_url', 'N/A')
+        pdf_name = pdf_url.split('/')[-1] + ".pdf" if pdf_url != 'N/A' else 'N/A'
+        year = article.get('publication_year', 'N/A')
+        journal = article.get('publication_title', 'N/A')
+        authors = ', '.join(author.get('full_name', 'N/A') for author in article.get('authors', {}).get('authors', []))
+        abstract = article.get('abstract', 'N/A')
 
         args.append([name, doi, pdf_name, year, journal, authors, abstract])
 
-        result.download_pdf(dirpath='./data/papers2/')
+        # Descargar el PDF si la URL está disponible
+        if pdf_url != 'N/A':
+            pdf_response = requests.get(pdf_url)
+            with open(f'./data/papers2/{pdf_name}', 'wb') as pdf_file:
+                pdf_file.write(pdf_response.content)
 
     return args
 
@@ -37,4 +44,4 @@ if __name__ == "__main__":
     start_year = 2020
     end_year = 2023
     author = None
-    download_arxiv_papers(query, start_year=start_year, end_year=end_year, author=author)
+    download_ieee_papers(query, start_year=start_year, end_year=end_year)

@@ -120,10 +120,10 @@ class PyPaperBot:
             if self.num_limit_type is not None and self.num_limit_type == 1:
                 to_download.sort(key=lambda x: int(x.cites_num) if x.cites_num is not None else 0, reverse=True)
 
-            result = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
+            arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
             
-        Paper.generateReport(result, to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description, eliminate_false_values=self.eliminate_false_values)
+        Paper.generateReport(arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description, eliminate_false_values=self.eliminate_false_values)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):
