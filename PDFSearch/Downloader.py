@@ -117,7 +117,7 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
                 failed += 1
 
 
-def download_arxiv_papers(query, max_results=1, start_year=None, end_year=None):
+def download_arxiv_papers(query,dwn_dir, max_results=1, start_year=None, end_year=None):
     # Construir la consulta con filtros adicionales
     if max_results==None:
         max_results = 5
@@ -151,7 +151,7 @@ def download_arxiv_papers(query, max_results=1, start_year=None, end_year=None):
 
         args.append(paper_info)
 
-        result.download_pdf(dirpath='./data/papers2/')
+        result.download_pdf(dirpath=dwn_dir)
 
     return args
 
