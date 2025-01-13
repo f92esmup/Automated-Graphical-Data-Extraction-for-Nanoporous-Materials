@@ -120,7 +120,7 @@ if __name__ == "__main__":
     parser.add_argument('--lfweights', default='./Image_detection/weights/weights.pth', type=str, help="Path to the model LineFormer weights file.")
     parser.add_argument('--cdconfig', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
     parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
-    parser.add_argument('--input_path', default='./data/images', type=str, help="Path to the directory containing input images.")
+    parser.add_argument('--input_path', default='./data/DemoImages', type=str, help="Path to the directory containing input images.")
     parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where output will be saved.")
     parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
     parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
