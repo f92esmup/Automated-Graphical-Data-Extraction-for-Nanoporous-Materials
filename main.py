@@ -51,7 +51,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-run_search(search_params)
+#run_search(search_params)
 
 # Call the extract_text_from_pdf and extract_images_from_pdf functions for each PDF in the papers folder
 for pdf_filename in os.listdir(args.papers_folder):
@@ -65,7 +65,7 @@ for subdir in os.listdir(args.input_path):
     subdir_path = os.path.join(args.input_path, subdir)
     if os.path.isdir(subdir_path):
         args.input_path = subdir_path
-        run_image_processing(args)
+        #run_image_processing(args)
 
 # Call the run_assembler function when needed
-run_assembler()
+#run_assembler()
