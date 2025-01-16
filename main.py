@@ -3,7 +3,8 @@ from DataAssembler.Assembler import run_assembler
 from image import run_image_processing
 import argparse
 import os
-from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
+#from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
+from AI.Extract_image_from_PDF import ImageInference
 
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
@@ -23,6 +24,9 @@ parser.add_argument('--num_limit', default=5, type=int, help="Number limit for d
 parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
 parser.add_argument('--papers_folder', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
 parser.add_argument('--output_folder', default='./data', type=str, help="Path to the directory where papers will be downloaded.")
+parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
+parser.add_argument('--pdf_input_dir', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
+parser.add_argument('--pdf_output_dir', default='./data/images', type=str, help="Path to the directory where output images will be saved.")
 args = parser.parse_args()
 
 # Prepare parameters for run_search
@@ -54,19 +58,27 @@ search_params = {
 # Call the run_search function with parameters
 run_search(search_params)
 
+# @PDFExtraction
+
 # Call the extract_text_from_pdf and extract_images_from_pdf functions for each PDF in the papers folder
-for pdf_filename in os.listdir(args.papers_folder):
-    if pdf_filename.endswith('.pdf'):
-        pdf_path = os.path.join(args.papers_folder, pdf_filename)
-        extract_images_from_pdf(pdf_path, args.output_folder)
-        extract_text_from_pdf(pdf_path, args.output_folder)
+#for pdf_filename in os.listdir(args.papers_folder):
+#    if pdf_filename.endswith('.pdf'):
+#        pdf_path = os.path.join(args.papers_folder, pdf_filename)
+#        extract_images_from_pdf(pdf_path, args.output_folder)
+#        extract_text_from_pdf(pdf_path, args.output_folder)
+
+# Initialize ImageInference
+inference = ImageInference(args.model_dir)
+
+# Use ImageInference to process the PDF
+inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
 
 # Call the run_image_processing function for each directory in the input_path
 for subdir in os.listdir(args.input_path):
     subdir_path = os.path.join(args.input_path, subdir)
     if os.path.isdir(subdir_path):
         args.input_path = subdir_path
-        #run_image_processing(args)
+        run_image_processing(args)
 
 # Call the run_assembler function when needed
-#run_assembler()
+run_assembler()
