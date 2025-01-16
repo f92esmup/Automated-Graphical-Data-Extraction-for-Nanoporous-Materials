@@ -33,6 +33,7 @@ search_params = {
     "dwn_dir": args.dwn_dir,
     "proxy_list": None,
     "min_date": None,
+    "max_date": None,
     "num_limit": args.num_limit,
     "num_limit_type": None,
     "filter_jurnal_file": None,
@@ -46,7 +47,7 @@ search_params = {
     "skip_words": None,
     "single_proxy": None,
     "doi_file": None,
-    "description": args.description,
+    #"description": args.description,
     "eliminate_false_values": False
 }
 

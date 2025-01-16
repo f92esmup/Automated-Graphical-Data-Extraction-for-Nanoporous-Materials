@@ -6,7 +6,7 @@ import time
 import requests
 from .Paper import Paper
 from .PapersFilters import filterJurnals, filter_min_date, similarStrings
-from .Downloader import downloadPapers, download_arxiv_papers
+from .Downloader import downloadPapers, download_arxiv_papers, download_scopus_papers, get_scopus_papers
 from .Scholar import ScholarPapersInfo
 from .Crossref import getPapersInfoFromDOIs
 from .proxy import proxy
@@ -14,10 +14,10 @@ from .__init__ import __version__
 from urllib.parse import urljoin
 
 class PyPaperBot:
-    def __init__(self, query=None, scholar_results=10, scholar_pages=1, dwn_dir=None, proxy_list=None, min_date=None, 
+    def __init__(self, query=None, scholar_results=10, scholar_pages=1, dwn_dir=None, proxy_list=None, min_date=None, max_date=None, 
                  num_limit=None, num_limit_type=None, filter_jurnal_file=None, restrict=None, DOIs=None, SciHub_URL=None, 
                  chrome_version=None, cites=None, use_doi_as_filename=False, SciDB_URL=None, skip_words=None, 
-                 single_proxy=None, doi_file=None, description=None, eliminate_false_values = False):
+                 single_proxy=None, doi_file=None, eliminate_false_values = False):
         # Query to make on Google Scholar or Google Scholar page link
         self.query = query
         # Number of scholar results to be downloaded when --scholar-pages=1
@@ -57,7 +57,7 @@ class PyPaperBot:
         # File .txt containing the list of paper's DOIs to download
         self.doi_file = doi_file
 
-        self.description = description
+        self.max_date = max_date
 
         self.eliminate_false_values = eliminate_false_values
     def checkVersion(self):
@@ -122,8 +122,12 @@ class PyPaperBot:
 
             arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
-            
-        Paper.generateReport(arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, self.description, eliminate_false_values=self.eliminate_false_values)
+            ############### SCOPUES DOWNLOAD ################
+            scopus = get_scopus_papers(self.query, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date)
+            download_scopus_papers(scopus, self.dwn_dir)
+            ############### ---------------- ################
+
+        Paper.generateReport(scopus,arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, eliminate_false_values=self.eliminate_false_values)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):

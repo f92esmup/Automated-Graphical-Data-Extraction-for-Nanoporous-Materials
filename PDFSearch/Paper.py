@@ -66,14 +66,15 @@ class Paper:
     def canBeDownloaded(self):
         return self.DOI is not None or self.scholar_link is not None
 
-    def generateReport(result, papers, path, dwn_dir, Description, eliminate_false_values=False):
+    def generateReport(scopus, arxiv, papers, path, dwn_dir, eliminate_false_values=False):
         # Define the column names
         columns = ["Name", "Scholar Link", "DOI", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
-                   "Downloaded from", "Authors", "Abstract", "Description"]
+                   "Downloaded from", "Authors", "Abstract"]
 
         # Prepare data to populate the DataFrame
         data = []
+
         for p in papers:
             pdf_name = p.getFileName() if p.downloaded else ""
             bibtex_found = p.bibtex is not None
@@ -87,13 +88,6 @@ class Paper:
             elif p.downloadedFrom == 3:
                 dwn_from = "Scholar"
 
-            # Extract two pages if abstract is not found
-            if p.abstract is None or len(p.abstract.lower()) <= 50:
-                try:
-                    pdf_path = dwn_dir + p.getFileName()
-                    p.abstract = Paper.extract_text_from_first_two_pages(pdf_path)
-                except:
-                    pass
             
             # Replace spaces with _-_ in authors' names
             if p.authors:
@@ -114,11 +108,10 @@ class Paper:
                 "Downloaded from": dwn_from if dwn_from is not None else "not found",
                 "Authors": p.authors if p.authors is not None else "not found",
                 "Abstract": p.abstract,  # Include abstract in the report
-                "Description": Paper.filter_with_gemini(p.abstract, Description)
             })
 
         
-        for r in result:
+        for r in arxiv:
             if r['pdf_name'] is not None:
                 r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
             # Append row data as a dictionary
@@ -134,7 +127,23 @@ class Paper:
                 "Downloaded from": "Arxiv",  # Downloaded from Arxiv
                 "Authors": r["authors"] if r["authors"] is not None else "not found",
                 "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
-                "Description": Paper.filter_with_gemini(r["abstract"], Description)
+            })
+
+        for r in scopus:
+            pdf_name = r['title'].replace(' ', '_') + ".pdf"
+            # Append row data as a dictionary
+            data.append({
+            "Name": r["title"] if r["title"] is not None else "not found",
+            "Scholar Link": "not found",  # No scholar link in result
+            "DOI": r["doi"] if r["doi"] is not None else "not found",
+            "PDF Name": pdf_name if pdf_name is not None else "not found",
+            "Year": r["year"] if r["year"] is not None else "not found",
+            "Scholar page": "not found",  # No scholar page in result
+            "Journal": r["publicationName"] if r["publicationName"] is not None else "not found",
+            "Downloaded": True,  # Assuming downloaded
+            "Downloaded from": "Scopus",  # Downloaded from Scopus
+            "Authors": r["creator"] if r["creator"] is not None else "not found",
+            "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
             })
 
 
