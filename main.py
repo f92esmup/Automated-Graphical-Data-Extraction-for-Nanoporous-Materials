@@ -1,10 +1,10 @@
 from Search import run_search
-from DataAssembler.Assembler import run_assembler
-from image import run_image_processing
+#from DataAssembler.Assembler import run_assembler
+#from image import run_image_processing
 import argparse
 import os
 #from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
-from AI.Extract_image_from_PDF import ImageInference
+#from AI.Extract_image_from_PDF import ImageInference
 
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
@@ -68,17 +68,17 @@ run_search(search_params)
 #        extract_text_from_pdf(pdf_path, args.output_folder)
 
 # Initialize ImageInference
-inference = ImageInference(args.model_dir)
+#inference = ImageInference(args.model_dir)
 
 # Use ImageInference to process the PDF
-inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
+#inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
 
 # Call the run_image_processing function for each directory in the input_path
 for subdir in os.listdir(args.input_path):
     subdir_path = os.path.join(args.input_path, subdir)
     if os.path.isdir(subdir_path):
         args.input_path = subdir_path
-        run_image_processing(args)
+#        run_image_processing(args)
 
 # Call the run_assembler function when needed
-run_assembler()
+#run_assembler()

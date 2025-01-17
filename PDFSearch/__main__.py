@@ -119,14 +119,12 @@ class PyPaperBot:
 
             if self.num_limit_type is not None and self.num_limit_type == 1:
                 to_download.sort(key=lambda x: int(x.cites_num) if x.cites_num is not None else 0, reverse=True)
-
+            
             arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
             ############### SCOPUES DOWNLOAD ################
-            scopus = get_scopus_papers(self.query, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date)
-            download_scopus_papers(scopus, self.dwn_dir)
+            scopus = download_scopus_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, SciHub_URL=self.SciHub_URL, SciDB_URL=self.SciDB_URL, restrict=self.restrict, min_date=self.min_date, chrome_version=self.chrome_version, cites=self.cites, skip_words=self.skip_words)
             ############### ---------------- ################
-
         Paper.generateReport(scopus,arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, eliminate_false_values=self.eliminate_false_values)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 

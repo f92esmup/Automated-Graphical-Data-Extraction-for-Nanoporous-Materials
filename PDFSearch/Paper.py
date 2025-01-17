@@ -130,20 +130,20 @@ class Paper:
             })
 
         for r in scopus:
-            pdf_name = r['title'].replace(' ', '_') + ".pdf"
+            pdf_name = r.title.replace(' ', '_') + ".pdf"
             # Append row data as a dictionary
             data.append({
-            "Name": r["title"] if r["title"] is not None else "not found",
-            "Scholar Link": "not found",  # No scholar link in result
-            "DOI": r["doi"] if r["doi"] is not None else "not found",
+            "Name": r.title if r.title is not None else "not found",
+            "Scholar Link": r.scholar_link if r.scholar_link is not None else "not found",
+            "DOI": r.DOI if r.DOI is not None else "not found",
             "PDF Name": pdf_name if pdf_name is not None else "not found",
-            "Year": r["year"] if r["year"] is not None else "not found",
-            "Scholar page": "not found",  # No scholar page in result
-            "Journal": r["publicationName"] if r["publicationName"] is not None else "not found",
-            "Downloaded": True,  # Assuming downloaded
+            "Year": r.year if r.year is not None else "not found",
+            "Scholar page": r.scholar_page if r.scholar_page is not None else "not found",
+            "Journal": r.jurnal if r.jurnal is not None else "not found",
+            "Downloaded": r.downloaded,
             "Downloaded from": "Scopus",  # Downloaded from Scopus
-            "Authors": r["creator"] if r["creator"] is not None else "not found",
-            "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
+            "Authors": r.authors if r.authors is not None else "not found",
+            "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
             })
 
 

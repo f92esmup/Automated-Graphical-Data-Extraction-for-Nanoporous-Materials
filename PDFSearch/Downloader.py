@@ -2,11 +2,14 @@ from os import path
 import requests
 import arxiv
 import time
+import sys
 from .HTMLparsers import getSchiHubPDF, SciHubUrls
 import random
 from .NetInfo import NetInfo
 from .Utils import URLjoin
 from requests.exceptions import ConnectionError, Timeout
+from .Scholar import ScholarPapersInfo
+from .Paper import Paper  # Import the Paper class
 
 
 def setSciHubUrl(scihub_mirror=None):
@@ -56,7 +59,7 @@ def saveFile(file_name, content, paper, dwn_source):
     paper.downloadedFrom = dwn_source
 
 
-def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None):
+def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None,scopus_down=False):
 
     NetInfo.SciHub_URL = SciHub_URL
     if NetInfo.SciHub_URL is None:
@@ -71,6 +74,7 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
     num_downloaded = 0
     paper_number = 1
     paper_files = []
+    download_results = []
     for p in papers:
         if p.canBeDownloaded() and (num_limit is None or num_downloaded < num_limit):
             print("Download {} of {} -> {}".format(paper_number, len(papers), p.title))
@@ -115,6 +119,10 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None)
                     pass
 
                 failed += 1
+
+        download_results.append(p.downloaded)
+
+    if scopus_down: return download_results
 
 
 def download_arxiv_papers(query,dwn_dir, max_results=1, start_year=None, end_year=None):
@@ -180,18 +188,88 @@ def get_scopus_papers(query, max_results=1, start_year=None, end_year=None):
 
     papers = []
     for entry in data.get('search-results', {}).get('entry', []):
-        paper = {
+        paper_info = {
             'title': entry.get('dc:title', 'N/A'),
-            'doi': entry.get('prism:doi', 'N/A'),
+            'DOI': entry.get('prism:doi', 'N/A'),
             'year': entry.get('prism:coverDate', 'N/A').split('-')[0],
             'url': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
             'publicationName': entry.get('prism:publicationName', 'N/A'),
-            'creator': entry.get('dc:creator', 'N/A'),
+            'authors': entry.get('dc:creator', 'N/A'),
             'affiliation': ', '.join([affil.get('affilname', 'N/A') for affil in entry.get('affiliation', [])]),
-            'abstract': entry.get('dc:description', 'N/A')
+            'abstract': entry.get('dc:description', 'N/A'),
+            'Scholar Link': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
+            'PDF Name': entry.get('dc:title', 'N/A') + ".pdf",
+            'Scholar page': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
+            'Downloaded': False,
+            'Downloaded from': 'Scopus',
         }
+        
+        # Create a Paper object for each paper in the scopus list
+        paper = Paper(
+            title=paper_info['title'],
+            scholar_link=paper_info.get('Scholar Link'),
+            scholar_page=paper_info.get('Scholar page'),
+            link_pdf=paper_info.get('PDF Name'),
+            year=paper_info.get('year'),
+            authors=paper_info.get('authors')
+        )
+        paper.DOI = paper_info['DOI']
+        paper.abstract = paper_info['abstract']
+        paper.pdf_link = paper_info['url']
+        #paper.publicationName = paper_info['publicationName']
+        paper.jurnal = paper_info['affiliation']
+        paper.downloadedFrom = paper_info['Downloaded from']
+        paper.downloaded=paper_info.get('Downloaded')
         papers.append(paper)
     return papers
 
-def download_scopus_papers(scopus, dwn_dir):
-    return
+def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_year=None, SciHub_URL=None, SciDB_URL=None, restrict=0, scholar_pages="1-1", min_date=None, scholar_results=1, chrome_version=None, cites=None, skip_words=None):
+    scopus = get_scopus_papers(query, max_results, start_year, end_year)
+    DOIs = [paper.DOI for paper in scopus if paper.DOI != 'N/A']
+    to_download = []
+    if restrict == 0:
+        print("Downloading papers from DOIs\n")
+        num = 1
+        i = 0
+        while i < len(DOIs):
+            DOI = DOIs[i]
+            print("Searching paper {} of {} with DOI {}".format(num, len(DOIs), DOI))
+            to_download.append(scopus[i])
+            num += 1
+            i += 1
+    else:
+        query=DOIs
+        for q in query:
+            #print()
+            #print("Query: {}".format(q))
+            #print()
+            if isinstance(scholar_pages, str):
+                try:
+                    split = scholar_pages.split('-')
+                    if len(split) == 1:
+                        scholar_pages = range(1, int(split[0]) + 1)
+                    elif len(split) == 2:
+                        start_page, end_page = [int(x) for x in split]
+                        scholar_pages = range(start_page, end_page + 1)
+                    else:
+                        raise ValueError
+                except Exception:
+                    print(r"Error: Invalid format for --scholar-pages option. Expected: %d or %d-%d, got: " + scholar_pages)
+                    sys.exit()
+            download = ScholarPapersInfo(q, scholar_pages, restrict, min_date, scholar_results, chrome_version, cites, skip_words)
+            # Filter out papers that are not downloaded from Scopus
+            #download = [paper for paper in download if paper.DOI == q]
+            if download:
+                to_download.extend(download)  # Use extend to add Paper objects directly
+            else:
+                # If no papers were found for the query, add a placeholder with downloaded set to False
+                to_download.append(Paper(title=None, scholar_link=None, scholar_page=None, link_pdf=None, year=None, authors=None))
+            #print("Hemos pasado por aqui")
+
+    down = downloadPapers(to_download, dwn_dir, max_results, SciHub_URL, SciDB_URL, scopus_down=True)
+    #print(down, len(query),len(to_download))
+
+    for idx, paper in enumerate(scopus):
+        paper.downloaded = down[idx]
+
+    return scopus

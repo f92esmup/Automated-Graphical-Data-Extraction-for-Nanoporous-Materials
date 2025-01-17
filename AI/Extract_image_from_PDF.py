@@ -6,6 +6,7 @@ import os
 import time
 from pdf2image import convert_from_path
 from supervision import BoxAnnotator  # Updated import
+from PyPDF2 import PdfReader
 
 # Set Hugging Face API key
 #os.environ["HF_API_KEY"] = "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"
@@ -96,6 +97,27 @@ class ImageInference:
 
         print(f'The pages of the PDF and their ROIs have been saved in {output_dir}')
 
+    def extract_text_from_pdf(self, pdf_path, output_dir):
+        try:
+            pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
+            text_output_dir = os.path.join(output_dir, "text")
+            os.makedirs(text_output_dir, exist_ok=True)
+            text_output_path = os.path.join(text_output_dir, f"{pdf_name}.txt")
+
+            with open(pdf_path, "rb") as file:
+                reader = PdfReader(file)
+                text = ""
+                for page_num in range(len(reader.pages)):
+                    page = reader.pages[page_num]
+                    text += page.extract_text() + "\n"
+
+            with open(text_output_path, "w") as text_file:
+                text_file.write(text)
+
+            print(f"Text extracted and saved to {text_output_path}")
+        except Exception as e:
+            print(f"An error occurred while extracting text: {e}")
+
     def convert_pdf_to_images_and_infer(self, input_dir, output_dir):
         # Check if input and output directories exist, if not create them
         if not os.path.exists(input_dir):
@@ -128,6 +150,9 @@ class ImageInference:
                     os.remove(image_path)
                 
                 print(f'The pages of the PDF {pdf_file} have been processed and saved in {pdf_output_dir}')
+                
+                # Extract text from the PDF
+                self.extract_text_from_pdf(pdf_path, output_dir)
 
 if __name__ == "__main__":
     start_time = time.time()  # Start timing

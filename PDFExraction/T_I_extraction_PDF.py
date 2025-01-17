@@ -16,6 +16,7 @@ def extract_text_from_pdf(pdf_path, output_folder):
             text = page.get_text()
             text_file.write(text)
 
+
 def extract_images_from_pdf(pdf_path, output_folder):
     pdf_document = fitz.open(pdf_path)
     pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]

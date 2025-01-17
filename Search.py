@@ -3,7 +3,7 @@ from PDFSearch.__main__ import PyPaperBot
 import os
 
 # Set the API key in the environment variables
-os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
+#os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
 #api_key = os.environ["GEMINI_API_KEY"]
 #genai.configure(api_key=api_key)
 
@@ -27,8 +27,8 @@ def run_search(params):
 if __name__ == "__main__":
     # Define the search parameters
     search_params = {
-    "query": 'Nanoporous materials',
-    "scholar_results": 10,
+    "query": 'machine learning',
+    "scholar_results": 2,
     "scholar_pages": '1-1',
     "dwn_dir": './data/papers/',
     "proxy_list": None,
