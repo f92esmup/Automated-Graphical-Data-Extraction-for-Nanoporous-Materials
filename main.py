@@ -16,7 +16,7 @@ parser.add_argument('--input_path', default='./data/images', type=str, help="Pat
 parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where csv file will be saved.")
 parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
-parser.add_argument('--query', default='Nanoporous materials', type=str, help="Search query for papers.")
+parser.add_argument('--query', default='Intrusion-extrusion in anoporous materials', type=str, help="Search query for papers.")
 parser.add_argument('--scholar_results', default=10, type=int, help="Number of scholar results.")
 parser.add_argument('--scholar_pages', default=1, type=int, help="Scholar pages to search.")
 parser.add_argument('--dwn_dir', default='./data/papers/', type=str, help="Directory to download papers.")

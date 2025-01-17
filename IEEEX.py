@@ -1,11 +1,12 @@
 import requests
+import xml.etree.ElementTree as ET
 
 def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
     # Construir la consulta con filtros adicionales
     args = []
 
-    base_url = "http://ieeexploreapi.ieee.org/api/v1/search/articles"
-    api_key = " xd94qvvrbkhnuckszr544znp"  # Reemplaza con tu clave de API de IEEE Xplore
+    base_url = "https://ieeexploreapi.ieee.org/api/v1/search/articles"
+    api_key = "445cefmjypbfptjgnzgtwzpt"  # Reemplaza con tu clave de API de IEEE Xplore
 
     params = {
         "apikey": api_key,
@@ -13,11 +14,28 @@ def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
         "max_records": max_results,
         "start_year": start_year,
         "end_year": end_year,
-        "format": "json"
+        "format": "json"  # Solicitar la respuesta en formato JSON
     }
 
     response = requests.get(base_url, params=params)
-    data = response.json()
+
+    # Imprimir la respuesta para depuración
+    print("Status Code:", response.status_code)
+    print("Response Text:", response.text)
+
+    if response.status_code == 403:
+        print("Error: Developer Inactive. Verifica que tu clave de API está activa.")
+        return
+
+    if response.status_code != 200:
+        print("Error en la solicitud:", response.status_code)
+        return
+
+    try:
+        data = response.json()
+    except requests.exceptions.JSONDecodeError as e:
+        print("Error al decodificar JSON:", e)
+        return
 
     for article in data.get('articles', []):
         name = article.get('title', 'N/A')
@@ -38,7 +56,7 @@ def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
         print(f"Journal: {journal}")
         print(f"Authors: {authors}")
         print(f"Abstract: {abstract}")
-        print("-" * 80)
+        print()
 
     return args
 
@@ -47,4 +65,5 @@ if __name__ == "__main__":
     start_year = 2020
     end_year = 2023
     author = None
-    download_ieee_papers(query, start_year=start_year, end_year=end_year)
+    results = download_ieee_papers(query, start_year=start_year, end_year=end_year)
+    print(results)
