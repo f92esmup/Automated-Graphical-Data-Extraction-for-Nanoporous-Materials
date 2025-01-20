@@ -269,6 +269,13 @@ def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_y
     down = downloadPapers(to_download, dwn_dir, max_results, SciHub_URL, SciDB_URL, scopus_down=True)
     #print(down, len(query),len(to_download))
 
+########### Ensure the lengths of down and scopus match- Es un ajuste temporal####
+    if len(down) != len(scopus):
+        print("Warning: Mismatch in the number of downloaded papers and scopus papers.")
+        min_length = min(len(down), len(scopus))
+        down = down[:min_length]
+        scopus = scopus[:min_length]
+######################################################################
     for idx, paper in enumerate(scopus):
         paper.downloaded = down[idx]
 

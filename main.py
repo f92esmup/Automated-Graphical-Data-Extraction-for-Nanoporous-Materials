@@ -1,10 +1,10 @@
 from Search import run_search
-#from DataAssembler.Assembler import run_assembler
+from DataAssembler.Assembler import run_assembler
 from image import run_image_processing
 import argparse
 import os
 #from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
-#from AI.Extract_image_from_PDF import ImageInference
+from PDFExraction.Extract_image_from_PDF import ImageInference
 
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
@@ -12,7 +12,7 @@ parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/
 parser.add_argument('--lfweights', default='./Image_detection/weights/weights.pth', type=str, help="Path to the model LineFormer weights file.")
 parser.add_argument('--cdconfig', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
 parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
-parser.add_argument('--input_path', default='./data/DemoImages', type=str, help="Path to the directory containing input images.")
+parser.add_argument('--input_path', default='./data/images', type=str, help="Path to the directory containing input images.")
 parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where csv file will be saved.")
 parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
@@ -24,7 +24,7 @@ parser.add_argument('--num_limit', default=5, type=int, help="Number limit for d
 parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
 parser.add_argument('--papers_folder', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
 parser.add_argument('--output_folder', default='./data', type=str, help="Path to the directory where papers will be downloaded.")
-parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
+parser.add_argument('--model_dir', default='/home/pedro/CICProject/AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
 parser.add_argument('--pdf_input_dir', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
 parser.add_argument('--pdf_output_dir', default='./data/images', type=str, help="Path to the directory where output images will be saved.")
 args = parser.parse_args()
@@ -56,7 +56,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-#run_search(search_params)
+run_search(search_params)
 
 # @PDFExtraction
 
@@ -68,13 +68,13 @@ search_params = {
 #        extract_text_from_pdf(pdf_path, args.output_folder)
 
 # Initialize ImageInference
-#inference = ImageInference(args.model_dir)
+inference = ImageInference(args.model_dir)
 
 # Use ImageInference to process the PDF
-#inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
+inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
 
 # Call the run_image_processing function
 run_image_processing(args)
 
 # Call the run_assembler function when needed
-#run_assembler()
+run_assembler()
