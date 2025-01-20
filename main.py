@@ -26,7 +26,7 @@ parser.add_argument('--papers_folder', default='./data/papers', type=str, help="
 parser.add_argument('--output_folder', default='./data', type=str, help="Path to the directory where papers will be downloaded.")
 parser.add_argument('--model_dir', default='/home/pedro/CICProject/AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
 parser.add_argument('--pdf_input_dir', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
-parser.add_argument('--pdf_output_dir', default='./data/images', type=str, help="Path to the directory where output images will be saved.")
+parser.add_argument('--pdf_output_dir', default='./data/papers', type=str, help="Path to the directory where output images will be saved.")
 args = parser.parse_args()
 
 # Prepare parameters for run_search

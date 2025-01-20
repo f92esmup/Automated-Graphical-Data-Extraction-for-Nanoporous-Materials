@@ -31,7 +31,7 @@ class ChartClassification:
         model = genai.GenerativeModel(
             model_name="gemini-1.5-pro",
             generation_config=generation_config,
-            system_instruction="You are a specialized classification model designed to analyze graphs and determine if they match the pattern of intrusion-extrusion curves. You must respond ONLY with \"YES\" or \"NO\".\nPattern Definition\nAn intrusion-extrusion graph must show ALL of the following characteristics:\nRequired Elements\n\nTwo distinct curves forming a closed cycle:\n\nOne for intrusion (loading)\nOne for extrusion (unloading)\n\n\nFor the intrusion curve:\n\nInitial horizontal plateau at low values\nSingle or multiple sharp transition regions\nFinal horizontal plateau at high values\nPositive slope during transitions\n\n\nFor the extrusion curve:\n\nMust start from the upper plateau\nMust show hysteresis (different path than intrusion)\nMust occur at lower pressure values than intrusion\nMust end near the initial starting point\n\n\n\nGraph Structure\n\nMust have pressure or equivalent variable on horizontal axis\nVertical axis must represent a quantity that changes with intrusion/extrusion\nBoth axes must show clear scales and units\n\nClassification Rules\n\nRespond \"YES\" if and only if ALL required elements are present\nRespond \"NO\" if ANY required element is missing\nDo not provide explanations or additional commentary\nDo not consider specific numerical values in your decision\nIgnore noise or small irregularities if the main pattern is clear\nConsider the pattern valid regardless of axis orientation or units used\n\nResponse Format\nProvide ONLY one of these two responses:\n\nYES\nNO\n\nAny other form of response is forbidden.",
+            system_instruction="You are a specialized classification model designed to analyze graphs and determine if they match the pattern of intrusion-extrusion curves. You must respond ONLY with \"YES\" or \"NO\".\n\nPattern Definition\nAn intrusion-extrusion curve must show ALL of the following characteristics:\n\nRequired Elements:\n1. Adsorption (intrusion) and desorption (extrusion) branches that may or may not form a completely closed cycle\n\nFor the adsorption branch:\n- Initial region of rapid uptake at low relative pressures\n- One or more step-like transitions or plateaus\n- Final plateau or steep uptake at high relative pressures\n- Generally positive slope during transitions\n\nFor the desorption branch:\n- Must start from the high pressure/uptake region\n- Must show hysteresis (different path than adsorption)\n- Must generally occur at lower pressure values than adsorption for equivalent uptake amounts\n- Should return towards initial uptake values at low pressure\n\nGraph Structure and Units:\n- Horizontal axis must show one of:\n  * Relative pressure (p/p₀) ranging from 0 to 1\n  * Absolute pressure (Pa, bar, mmHg, etc.)\n  * Equivalent pressure-related variable\n\n- Vertical axis must show one of:\n  * Volume adsorbed (cm³/g, cm³/g STP)\n  * Amount adsorbed (mmol/g)\n  * Uptake (cm³/nm⁻¹/g⁻¹)\n  * dV/d(log D) or similar differential volumes\n  * Equivalent adsorption/uptake measurements\n\n- Both axes must include clear unit labels\n\nAdditional Validation:\n- For pore size distribution graphs (if present):\n  * Horizontal axis should show pore width/diameter in nm or Å\n  * Vertical axis should show differential volume or similar distribution measure\n\nClassification Rules:\n- Respond \"YES\" if and only if ALL required elements are present\n- Respond \"NO\" if ANY required element is missing\n- Do not provide explanations or additional commentary\n- Do not consider specific numerical values in your decision\n- Ignore noise or small irregularities if the main pattern is clear\n- Consider the pattern valid regardless of axis orientation if units are appropriate\n\nResponse Format:\nProvide ONLY one of these two responses:\nYES\nNO\nAny other form of response is forbidden.",
         )
         return model
 
@@ -61,20 +61,12 @@ class ChartClassification:
 
     def classify_images_in_directory(self, directory_path):
         for root, _, files in os.walk(directory_path):
-            intrusion_extrusion_dir = os.path.join(root, "Intrusion_extrusion")
-            others_dir = os.path.join(root, "others")
-            
-            os.makedirs(intrusion_extrusion_dir, exist_ok=True)
-            os.makedirs(others_dir, exist_ok=True)
-        for root, _, files in os.walk(directory_path):
             for file in files:
                 if file.endswith(('.png', '.jpg', '.jpeg')):
                     image_path = os.path.join(root, file)
                     response = self.configure_and_start_chat("Is it an extrusion-intrusión chart?", image_path)
-                    if response.strip() == "YES":
-                        shutil.move(image_path, os.path.join(intrusion_extrusion_dir, file))
-                    else:
-                        shutil.move(image_path, os.path.join(others_dir, file))
+                    if response.strip() != "YES":
+                        os.remove(image_path)
 
 # Example usage
 if __name__ == "__main__":
@@ -82,5 +74,5 @@ if __name__ == "__main__":
     classifier = ChartClassification(debug=debug)
 
     # Classify images in a directory
-    directory_path = "/home/pedro/CICProject/data/images"
+    directory_path = "/home/pedro/CICProject/data/papers"
     classifier.classify_images_in_directory(directory_path)

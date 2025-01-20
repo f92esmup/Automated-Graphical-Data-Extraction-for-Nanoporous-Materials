@@ -100,9 +100,7 @@ class ImageInference:
     def extract_text_from_pdf(self, pdf_path, output_dir):
         try:
             pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
-            text_output_dir = os.path.join(output_dir, "text")
-            os.makedirs(text_output_dir, exist_ok=True)
-            text_output_path = os.path.join(text_output_dir, f"{pdf_name}.txt")
+            text_output_path = os.path.join(output_dir, f"{pdf_name}.txt")
 
             with open(pdf_path, "rb") as file:
                 reader = PdfReader(file)
@@ -140,7 +138,7 @@ class ImageInference:
                 # Save each page as an image and perform inference
                 for i, page in enumerate(pages):
                     page_number = i + 1
-                    image_path = os.path.join(pdf_output_dir, f'page_{page_number}.png')
+                    image_path = os.path.join(pdf_output_dir, f'image_{page_number}.png')
                     page.save(image_path, 'PNG')
                     
                     # Perform inference on the saved image
@@ -152,7 +150,7 @@ class ImageInference:
                 print(f'The pages of the PDF {pdf_file} have been processed and saved in {pdf_output_dir}')
                 
                 # Extract text from the PDF
-                self.extract_text_from_pdf(pdf_path, output_dir)
+                self.extract_text_from_pdf(pdf_path, pdf_output_dir)
 
 if __name__ == "__main__":
     start_time = time.time()  # Start timing
@@ -160,7 +158,7 @@ if __name__ == "__main__":
     # Example usage: Replace with your model path and directory path
     model_path = "./AI/FLorence-Demo/florence2-lora" # Replace with your model path
     pdf_input_dir = "/home/pedro/CICProject/data/DemoPapers" # Replace with your PDF input directory
-    output_dir = "./data/images" # Replace with your output directory
+    output_dir = "./data/papers" # Replace with your output directory
     
     # Load the model and perform inference
     inference = ImageInference(model_path)
