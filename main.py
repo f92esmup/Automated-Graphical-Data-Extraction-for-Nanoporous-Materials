@@ -1,6 +1,6 @@
 from Search import run_search
 #from DataAssembler.Assembler import run_assembler
-#from image import run_image_processing
+from image import run_image_processing
 import argparse
 import os
 #from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
@@ -12,7 +12,7 @@ parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/
 parser.add_argument('--lfweights', default='./Image_detection/weights/weights.pth', type=str, help="Path to the model LineFormer weights file.")
 parser.add_argument('--cdconfig', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
 parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
-parser.add_argument('--input_path', default='./data/images', type=str, help="Path to the directory containing input images.")
+parser.add_argument('--input_path', default='./data/DemoImages', type=str, help="Path to the directory containing input images.")
 parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where csv file will be saved.")
 parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
@@ -56,7 +56,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-run_search(search_params)
+#run_search(search_params)
 
 # @PDFExtraction
 
@@ -73,12 +73,8 @@ run_search(search_params)
 # Use ImageInference to process the PDF
 #inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
 
-# Call the run_image_processing function for each directory in the input_path
-for subdir in os.listdir(args.input_path):
-    subdir_path = os.path.join(args.input_path, subdir)
-    if os.path.isdir(subdir_path):
-        args.input_path = subdir_path
-#        run_image_processing(args)
+# Call the run_image_processing function
+run_image_processing(args)
 
 # Call the run_assembler function when needed
 #run_assembler()
