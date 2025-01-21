@@ -59,7 +59,7 @@ def saveFile(file_name, content, paper, dwn_source):
     paper.downloadedFrom = dwn_source
 
 
-def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None,scopus_down=False):
+def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None):
 
     NetInfo.SciHub_URL = SciHub_URL
     if NetInfo.SciHub_URL is None:
@@ -74,7 +74,6 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None,
     num_downloaded = 0
     paper_number = 1
     paper_files = []
-    download_results = []
     for p in papers:
         if p.canBeDownloaded() and (num_limit is None or num_downloaded < num_limit):
             print("Download {} of {} -> {}".format(paper_number, len(papers), p.title))
@@ -119,10 +118,6 @@ def downloadPapers(papers, dwnl_dir, num_limit, SciHub_URL=None, SciDB_URL=None,
                     pass
 
                 failed += 1
-
-        download_results.append(p.downloaded)
-
-    if scopus_down: return download_results
 
 
 def download_arxiv_papers(query,dwn_dir, max_results=1, start_year=None, end_year=None):
@@ -189,17 +184,17 @@ def get_scopus_papers(query, max_results=1, start_year=None, end_year=None):
     papers = []
     for entry in data.get('search-results', {}).get('entry', []):
         paper_info = {
-            'title': entry.get('dc:title', 'N/A'),
-            'DOI': entry.get('prism:doi', 'N/A'),
-            'year': entry.get('prism:coverDate', 'N/A').split('-')[0],
-            'url': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
-            'publicationName': entry.get('prism:publicationName', 'N/A'),
-            'authors': entry.get('dc:creator', 'N/A'),
-            'affiliation': ', '.join([affil.get('affilname', 'N/A') for affil in entry.get('affiliation', [])]),
-            'abstract': entry.get('dc:description', 'N/A'),
-            'Scholar Link': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
-            'PDF Name': entry.get('dc:title', 'N/A') + ".pdf",
-            'Scholar page': entry.get('link', [{}])[2].get('@href', 'N/A') if len(entry.get('link', [])) > 2 else 'N/A',
+            'title': entry.get('dc:title', None),
+            'DOI': entry.get('prism:doi', None),
+            'year': entry.get('prism:coverDate', None).split('-')[0] if entry.get('prism:coverDate', None) else None,
+            'url': entry.get('link', [{}])[2].get('@href', None) if len(entry.get('link', [])) > 2 else None,
+            'publicationName': entry.get('prism:publicationName', None),
+            'authors': entry.get('dc:creator', None),
+            'affiliation': ', '.join([affil.get('affilname', None) for affil in entry.get('affiliation', [])]),
+            'abstract': entry.get('dc:description', None),
+            'Scholar Link': entry.get('link', [{}])[2].get('@href', None) if len(entry.get('link', [])) > 2 else None,
+            'PDF Name': entry.get('dc:title', None) + ".pdf" if entry.get('dc:title', None) else None,
+            'Scholar page': entry.get('link', [{}])[2].get('@href', None) if len(entry.get('link', [])) > 2 else None,
             'Downloaded': False,
             'Downloaded from': 'Scopus',
         }
@@ -266,17 +261,6 @@ def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_y
                 to_download.append(Paper(title=None, scholar_link=None, scholar_page=None, link_pdf=None, year=None, authors=None))
             #print("Hemos pasado por aqui")
 
-    down = downloadPapers(to_download, dwn_dir, max_results, SciHub_URL, SciDB_URL, scopus_down=True)
+    downloadPapers(to_download, dwn_dir, max_results, SciHub_URL, SciDB_URL)
     #print(down, len(query),len(to_download))
-
-########### Ensure the lengths of down and scopus match- Es un ajuste temporal####
-    if len(down) != len(scopus):
-        print("Warning: Mismatch in the number of downloaded papers and scopus papers.")
-        min_length = min(len(down), len(scopus))
-        down = down[:min_length]
-        scopus = scopus[:min_length]
-######################################################################
-    for idx, paper in enumerate(scopus):
-        paper.downloaded = down[idx]
-
     return scopus

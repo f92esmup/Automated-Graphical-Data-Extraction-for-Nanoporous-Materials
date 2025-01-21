@@ -1,5 +1,15 @@
 import pandas as pd
 import os
+from AI.Gemini.Imageproperties import GraphDocumentAnalysis
+
+def analyze_graphs(df):
+    analyzer = GraphDocumentAnalysis(debug=False)
+    for index, row in df.iterrows():
+        image_path = os.path.join('./data/images', row['paper'].replace('.pdf', ''), row['graph'])
+        document_path = os.path.join('./data/papers', row['paper'])
+        if os.path.isfile(image_path) and os.path.isfile(document_path):
+            analysis_result = analyzer.analyze_graph_and_document(image_path, document_path)
+            df.at[index, 'properties'] = analysis_result
 
 def run_assembler():
     # Crear un DataFrame vacío con las columnas especificadas
@@ -25,7 +35,7 @@ def run_assembler():
 
     # Convertir la lista de filas en un DataFrame y concatenar
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-
+    analyze_graphs(df)
     # Guardar el DataFrame en un archivo CSV
     df.to_csv('./data/dataset.csv', index=False)
 

@@ -126,11 +126,13 @@ class Paper:
                 "Downloaded": True,  # Assuming downloaded
                 "Downloaded from": "Arxiv",  # Downloaded from Arxiv
                 "Authors": r["authors"] if r["authors"] is not None else "not found",
-                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
+                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
             })
 
         for r in scopus:
             pdf_name = r.title.replace(' ', '_') + ".pdf"
+            pdf_path = os.path.join(dwn_dir, pdf_name)
+            downloaded = os.path.exists(pdf_path)
             # Append row data as a dictionary
             data.append({
             "Name": r.title if r.title is not None else "not found",
@@ -140,10 +142,10 @@ class Paper:
             "Year": r.year if r.year is not None else "not found",
             "Scholar page": r.scholar_page if r.scholar_page is not None else "not found",
             "Journal": r.jurnal if r.jurnal is not None else "not found",
-            "Downloaded": r.downloaded,
+            "Downloaded": downloaded,
             "Downloaded from": "Scopus",  # Downloaded from Scopus
             "Authors": r.authors if r.authors is not None else "not found",
-            "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' '),  # Include abstract in the report
+            "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' ') if r.abstract is not None else "not found",  # Include abstract in the report
             })
 
 

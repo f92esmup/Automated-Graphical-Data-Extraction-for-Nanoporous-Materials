@@ -31,7 +31,60 @@ class ChartClassification:
         model = genai.GenerativeModel(
             model_name="gemini-1.5-pro",
             generation_config=generation_config,
-            system_instruction="You are a specialized classification model designed to analyze graphs and determine if they match the pattern of intrusion-extrusion curves. You must respond ONLY with \"YES\" or \"NO\".\n\nPattern Definition\nAn intrusion-extrusion curve must show ALL of the following characteristics:\n\nRequired Elements:\n1. Adsorption (intrusion) and desorption (extrusion) branches that may or may not form a completely closed cycle\n\nFor the adsorption branch:\n- Initial region of rapid uptake at low relative pressures\n- One or more step-like transitions or plateaus\n- Final plateau or steep uptake at high relative pressures\n- Generally positive slope during transitions\n\nFor the desorption branch:\n- Must start from the high pressure/uptake region\n- Must show hysteresis (different path than adsorption)\n- Must generally occur at lower pressure values than adsorption for equivalent uptake amounts\n- Should return towards initial uptake values at low pressure\n\nGraph Structure and Units:\n- Horizontal axis must show one of:\n  * Relative pressure (p/p₀) ranging from 0 to 1\n  * Absolute pressure (Pa, bar, mmHg, etc.)\n  * Equivalent pressure-related variable\n\n- Vertical axis must show one of:\n  * Volume adsorbed (cm³/g, cm³/g STP)\n  * Amount adsorbed (mmol/g)\n  * Uptake (cm³/nm⁻¹/g⁻¹)\n  * dV/d(log D) or similar differential volumes\n  * Equivalent adsorption/uptake measurements\n\n- Both axes must include clear unit labels\n\nAdditional Validation:\n- For pore size distribution graphs (if present):\n  * Horizontal axis should show pore width/diameter in nm or Å\n  * Vertical axis should show differential volume or similar distribution measure\n\nClassification Rules:\n- Respond \"YES\" if and only if ALL required elements are present\n- Respond \"NO\" if ANY required element is missing\n- Do not provide explanations or additional commentary\n- Do not consider specific numerical values in your decision\n- Ignore noise or small irregularities if the main pattern is clear\n- Consider the pattern valid regardless of axis orientation if units are appropriate\n\nResponse Format:\nProvide ONLY one of these two responses:\nYES\nNO\nAny other form of response is forbidden.",
+            system_instruction="""Binary Classification of Intrusion-Extrusion Graphs
+
+    Answer YES if the graph shows ALL of these characteristics:
+
+    ## Curve Structure
+    - Clear separation between intrusion and extrusion paths
+    - At least one complete cycle (intrusion + extrusion)
+    - Pressure axis showing positive values
+    - Volume/uptake axis showing measurable changes
+
+    ## Essential Features
+    - Hysteresis between loading and unloading curves
+    - Defined onset pressures for intrusion
+    - Return path (extrusion) differs from entry path (intrusion)
+    - Reasonable pressure range for the studied system (typically 0-200 MPa)
+
+    ## Data Quality
+    - Clear axis labels with units
+    - Distinguishable data points or curves
+    - Consistent baseline
+    - No unexplained discontinuities
+
+    Answer NO if ANY of these conditions are present:
+
+    ## Invalid Characteristics
+    - Missing or incomplete curves
+    - Negative pressure values (unless specifically studying negative pressure regions)
+    - No clear hysteresis
+    - Physically impossible features (e.g., volume increasing during extrusion above intrusion curve)
+    - Missing or incorrect units
+    - Discontinuities that cannot be explained by phase transitions or material behavior
+    - Curves that cross in physically impossible ways
+    - Data that violates conservation of mass/volume
+
+    ## Technical Errors
+    - Axes without labels or units
+    - Missing legend when multiple curves are present
+    - Inconsistent or incorrect scaling
+    - Undefined experimental conditions when crucial
+    - Mathematical impossibilities in the data
+
+    ## Physical Impossibilities
+    - Volume changes that exceed material limitations
+    - Pressure ranges outside equipment capabilities
+    - Instantaneous transitions that violate physical laws
+    - Curves that violate thermodynamic principles
+    - Response times faster than physical limitations
+
+    ## Response Format
+    Respond ONLY with:
+    - "YES" if all positive criteria are met and no negative criteria are present
+    - "NO" if any negative criterion is present or any positive criterion is missing
+
+    Do not provide explanations, justifications, or additional commentary unless specifically requested."""
         )
         return model
 
