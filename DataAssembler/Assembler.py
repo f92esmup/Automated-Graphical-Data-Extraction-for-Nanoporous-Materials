@@ -1,41 +1,35 @@
 import pandas as pd
 import os
 from AI.Gemini.Imageproperties import GraphDocumentAnalysis
-
-def analyze_graphs(df):
-    analyzer = GraphDocumentAnalysis(debug=False)
-    for index, row in df.iterrows():
-        image_path = os.path.join('./data/images', row['paper'].replace('.pdf', ''), row['graph'])
-        document_path = os.path.join('./data/papers', row['paper'])
-        if os.path.isfile(image_path) and os.path.isfile(document_path):
-            analysis_result = analyzer.analyze_graph_and_document(image_path, document_path)
-            df.at[index, 'properties'] = analysis_result
+from tqdm import tqdm
 
 def run_assembler():
+    analyzer = GraphDocumentAnalysis(debug=False)
     # Crear un DataFrame vacío con las columnas especificadas
-    columns = ['graph', 'properties', 'paper', 'errors', 'confidence_score']
+    columns = ['graph', 'paper', 'errors', 'confidence_score', 'properties']
     df = pd.DataFrame(columns=columns)
 
-    # Recorrer los directorios de imágenes
-    data_dir = './data/images'
+    # Recorrer los directorios de imágenes y PDFs
+    data_dir = './data/papers'
     rows = []
-    for paper_dir in os.listdir(data_dir):
-        paper_path = os.path.join(data_dir, paper_dir)
-        if os.path.isdir(paper_path):
-            for image in os.listdir(paper_path):
-                image_path = os.path.join(paper_path, image)
-                if os.path.isfile(image_path):
+    files_list = [os.path.join(root, file) for root, dirs, files in os.walk(data_dir) for file in files if file.endswith(".pdf")]
+    for document_path in tqdm(files_list, desc="Processing files"):
+        image_folder = os.path.join(os.path.dirname(document_path), os.path.splitext(os.path.basename(document_path))[0])
+        if os.path.isdir(image_folder):
+            for image_file in os.listdir(image_folder):
+                image_path = os.path.join(image_folder, image_file)
+                if image_file.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    properties = analyzer.analyze_graph_and_document(image_path, document_path)
                     rows.append({
-                        'graph': image,
-                        'properties': None,
-                        'paper': f"{paper_dir}.pdf",
+                        'graph': image_file,
+                        'paper': os.path.basename(document_path),
                         'errors': None,
-                        'confidence_score': None
+                        'confidence_score': None,
+                        'properties': properties
                     })
 
     # Convertir la lista de filas en un DataFrame y concatenar
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-    analyze_graphs(df)
     # Guardar el DataFrame en un archivo CSV
     df.to_csv('./data/dataset.csv', index=False)
 

@@ -1,5 +1,5 @@
 from Search import run_search
-#from DataAssembler.Assembler import run_assembler
+from DataAssembler.Assembler import run_assembler
 #from image import run_image_processing
 import argparse
 import os
@@ -59,7 +59,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-run_search(search_params)
+#run_search(search_params)
 
 # @PDFExtraction
 
@@ -71,7 +71,7 @@ run_search(search_params)
 #        extract_text_from_pdf(pdf_path, args.output_folder)
 
 # Initialize ImageInference
-inference = ImageInference(args.model_dir)
+inference = ImageInference(args.model_dir,classification=False)
 
 # Use ImageInference to process the PDF
 inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)

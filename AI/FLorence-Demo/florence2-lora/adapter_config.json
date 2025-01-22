@@ -23,14 +23,14 @@
   "rank_pattern": {},
   "revision": "refs/pr/6",
   "target_modules": [
-    "o_proj",
-    "q_proj",
-    "v_proj",
-    "k_proj",
     "Conv2d",
     "linear",
+    "v_proj",
+    "q_proj",
+    "fc2",
+    "o_proj",
     "lm_head",
-    "fc2"
+    "k_proj"
   ],
   "task_type": "CAUSAL_LM",
   "use_dora": false,

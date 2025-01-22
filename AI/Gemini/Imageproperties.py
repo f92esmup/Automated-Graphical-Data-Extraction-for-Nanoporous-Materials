@@ -4,7 +4,6 @@ warnings.filterwarnings('ignore')
 
 # Image processing and system libraries
 import os
-import shutil
 
 # Google Generative AI library
 import google.generativeai as genai
@@ -65,24 +64,13 @@ class GraphDocumentAnalysis:
         response = self.configure_and_start_chat("Analyze the graph and document.", image_path, document_path)
         return response
 
-    def analyze_folder(self, folder_path):
-        for root, dirs, files in os.walk(folder_path):
-            for file in files:
-                if file.endswith(".pdf"):
-                    document_path = os.path.join(root, file)
-                    image_folder = os.path.join(root, os.path.splitext(file)[0])
-                    if os.path.isdir(image_folder):
-                        for image_file in os.listdir(image_folder):
-                            image_path = os.path.join(image_folder, image_file)
-                            if image_file.lower().endswith(('.png', '.jpg', '.jpeg')):
-                                result = self.analyze_graph_and_document(image_path, document_path)
-                                print(f"Result for {image_file} and {file}:\n{result}\n")
-
 # Example usage
 if __name__ == "__main__":
     debug = False
     analyzer = GraphDocumentAnalysis(debug=debug)
 
-    # Analyze a folder with PDFs and corresponding images
-    folder_path = "/home/pedro/CICProject/data/papers"
-    analyzer.analyze_folder(folder_path)
+    # Analyze a single PDF and corresponding image
+    pdf_path = "/home/pedro/CICProject/data/DemoPapers/reference.pdf"
+    image_path = "/home/pedro/CICProject/data/DemoImages/image3.png"
+    result = analyzer.analyze_graph_and_document(image_path, pdf_path)
+    print(f"Result:\n{result}\n")

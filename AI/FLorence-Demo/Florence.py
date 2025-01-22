@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     # Example usage: Replace with your model path and image path
     model_path = "./AI/FLorence-Demo/florence2-lora" # Replace with your model path
-    image_path = "./AI/FLorence-Demo/page2.png" # Replace with your image path
+    image_path = "./AI/FLorence-Demo/page.png" # Replace with your image path
     inference_from_image(model_path, image_path)
 
     end_time = time.time()  # End timing

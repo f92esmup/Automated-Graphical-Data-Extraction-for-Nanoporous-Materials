@@ -3,7 +3,7 @@ from PIL import Image
 from transformers import AutoModelForCausalLM, AutoProcessor
 import supervision as sv
 import os
-from pdf2image import convert_from_path
+from pdf2image import convert_from_path, pdfinfo_from_path  # Updated import
 from supervision import BoxAnnotator  # Updated import
 from PyPDF2 import PdfReader
 from AI.Gemini.Chart_Classification import ChartClassification  # Import the ChartClassification class
@@ -14,12 +14,14 @@ from tqdm import tqdm  # Add tqdm import
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # Disable tokenizers parallelism warning
 
 class ImageInference:
-    def __init__(self, model_path):
+    def __init__(self, model_path,classification=True):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model_path = model_path
         self.model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True).to(self.DEVICE)
         self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
-        self.chart_classifier = ChartClassification(debug=False)  # Initialize ChartClassification
+        self.classification = classification
+        if self.classification:
+            self.chart_classifier = ChartClassification(debug=False)  # Initialize ChartClassification
 
     def inference_from_image(self, image_path, page_number, output_dir):
         try:
@@ -113,6 +115,13 @@ class ImageInference:
         except Exception as e:
             print(f"An error occurred while extracting text: {e}")
 
+    def detect_images_in_page(self, page):
+        try:
+            images = page['/Resources']['/XObject'].get_object()
+            return any(images)
+        except KeyError:
+            return False
+
     def convert_pdf_to_images_and_infer(self, input_dir, output_dir):
         # Check if input and output directories exist, if not create them
         if not os.path.exists(input_dir):
@@ -131,24 +140,28 @@ class ImageInference:
             
             # Convert PDF to images
             pages = convert_from_path(pdf_path)
+            reader = PdfReader(pdf_path)
             
             for i, page in enumerate(tqdm(pages, desc=f"Processing pages of {pdf_file}", leave=False)):
                 page_number = i + 1
-                image_path = os.path.join(pdf_output_dir, f'image_{page_number}.png')
-                page.save(image_path, 'PNG')
+                pdf_page = reader.pages[i]
                 
-                # Perform inference on the saved image
-                response = self.inference_from_image(image_path, page_number, pdf_output_dir)
-                
-                # Delete the image after inference
-                os.remove(image_path)
+                if self.detect_images_in_page(pdf_page):
+                    image_path = os.path.join(pdf_output_dir, f'page_{page_number}.png')
+                    page.save(image_path, 'PNG')
+                    
+                    # Perform inference on the saved image
+                    response = self.inference_from_image(image_path, page_number, pdf_output_dir)
+                    
+                    # Delete the image after inference
+                    os.remove(image_path)
             
             print(f'The pages of the PDF {pdf_file} have been processed and saved in {pdf_output_dir}')
             
             # Extract text from the PDF
             self.extract_text_from_pdf(pdf_path, pdf_output_dir)
-
-            self.chart_classifier.classify_images_in_directory(pdf_output_dir)
+            if self.classification:
+                self.chart_classifier.classify_images_in_directory(pdf_output_dir)
             
 if __name__ == "__main__":
     # Example usage: Replace with your model path and directory path
@@ -160,5 +173,3 @@ if __name__ == "__main__":
     inference = ImageInference(model_path)
 
     inference.convert_pdf_to_images_and_infer(pdf_input_dir, output_dir)
-    inference.classify_and_infer_images(pdf_input_dir, output_dir)  # Use the new function
-
