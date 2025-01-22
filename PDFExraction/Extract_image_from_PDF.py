@@ -14,11 +14,12 @@ from tqdm import tqdm  # Add tqdm import
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # Disable tokenizers parallelism warning
 
 class ImageInference:
-    def __init__(self, model_path,classification=True):
+    def __init__(self, model_path,classification=True, text_extraction=False):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model_path = model_path
         self.model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True).to(self.DEVICE)
         self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
+        self.text_extraction = text_extraction
         self.classification = classification
         if self.classification:
             self.chart_classifier = ChartClassification(debug=False)  # Initialize ChartClassification
@@ -159,7 +160,9 @@ class ImageInference:
             print(f'The pages of the PDF {pdf_file} have been processed and saved in {pdf_output_dir}')
             
             # Extract text from the PDF
-            self.extract_text_from_pdf(pdf_path, pdf_output_dir)
+            if self.text_extraction:
+                self.extract_text_from_pdf(pdf_path, pdf_output_dir)
+                
             if self.classification:
                 self.chart_classifier.classify_images_in_directory(pdf_output_dir)
             

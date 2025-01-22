@@ -9,4 +9,5 @@
     - Esas propiedades relacionarlas con la gráfica a la que se refiere.
     - Usar al información del texto también para ayudar a la clasificación de la gráfica.
 
+He incluido que la extracción de texto y clasificación se pueda desactivar.
 
