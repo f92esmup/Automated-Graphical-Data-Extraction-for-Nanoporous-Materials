@@ -59,7 +59,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-#run_search(search_params)
+run_search(search_params)
 
 # @PDFExtraction
 
@@ -90,7 +90,7 @@ processor = ImageProcessor(
 processor.run_image_processing(args.input_path, args.output_path)
 
 # Call the run_assembler function when needed
-#run_assembler()
+run_assembler()
 
 end_time = time.time()  # End timing
 print(f"Total execution time: {end_time - start_time} seconds")  # Print the total execution time
