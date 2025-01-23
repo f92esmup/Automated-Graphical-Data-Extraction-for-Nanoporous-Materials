@@ -8,6 +8,9 @@ import time
 # Set Hugging Face API key
 #os.environ["HF_API_KEY"] = "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"
 
+# Disable tokenizers parallelism warning
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def inference_from_image(model_path, image_path):
@@ -39,10 +42,10 @@ def inference_from_image(model_path, image_path):
         detections = sv.Detections.from_lmm(sv.LMM.FLORENCE_2, response, resolution_wh=image.size)
 
         # Annotate and display the image
-        bounding_box_annotator = sv.BoundingBoxAnnotator(color_lookup=sv.ColorLookup.INDEX)
+        box_annotator = sv.BoxAnnotator(color_lookup=sv.ColorLookup.INDEX)
         label_annotator = sv.LabelAnnotator(color_lookup=sv.ColorLookup.INDEX)
 
-        image = bounding_box_annotator.annotate(image, detections)
+        image = box_annotator.annotate(image, detections)
         image = label_annotator.annotate(image, detections)
         image.thumbnail((600, 600))
         image.show()
