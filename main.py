@@ -1,6 +1,6 @@
 from Search import run_search
 from DataAssembler.Assembler import run_assembler
-#from image import run_image_processing
+from image import ImageProcessor  # Import ImageProcessor class
 import argparse
 import os
 import time  # Add import for time module
@@ -71,13 +71,23 @@ search_params = {
 #        extract_text_from_pdf(pdf_path, args.output_folder)
 
 # Initialize ImageInference
-inference = ImageInference(args.model_dir,classification=False)
+inference = ImageInference(args.model_dir, classification=False)
 
 # Use ImageInference to process the PDF
 inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
 
-# Call the run_image_processing function
-#run_image_processing(args)
+# Initialize ImageProcessor
+processor = ImageProcessor(
+    cd_config_path=args.cdconfig,
+    cd_weights_path=args.cdweights,
+    lf_config_path=args.lfconfig,
+    lf_weights_path=args.lfweights,
+    device=args.device,
+    debug=args.debug
+)
+
+# Run image processing
+processor.run_image_processing(args.input_path, args.output_path)
 
 # Call the run_assembler function when needed
 #run_assembler()

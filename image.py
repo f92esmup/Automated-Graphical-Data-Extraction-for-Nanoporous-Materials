@@ -32,6 +32,11 @@ class ImageProcessor:
         
         if debug: print("Models loaded successfully.")
 
+        # Set the API key in the environment variables
+        os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
+        api_key = os.environ["GEMINI_API_KEY"]
+        genai.configure(api_key=api_key)
+
     def process_image(self, image_path, output_path):
         try:
             # Run inference on the image
@@ -95,32 +100,22 @@ class ImageProcessor:
             print(f"Error processing {image_path}: {e}")
             pass
 
-def run_image_processing(args):
-    # Clear the console
-    #subprocess.run("clear" if os.name == "posix" else "cls", shell=True)
+    def run_image_processing(self, input_path, output_path):
+        # Clear the console
+        # subprocess.run("clear" if os.name == "posix" else "cls", shell=True)
 
-    # Set the API key in the environment variables
-    os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
-    api_key = os.environ["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-
-    # Initialize ImageProcessor
-    processor = ImageProcessor(
-        cd_config_path=args.cdconfig,
-        cd_weights_path=args.cdweights,
-        lf_config_path=args.lfconfig,
-        lf_weights_path=args.lfweights,
-        device=args.device,
-        debug=args.debug
-    )
-
-    # Process each image in the input directory
-    if args.debug: print("Starting image processing...")
-    for image_name in tqdm(os.listdir(args.input_path), desc="Processing images"):
-        image_path = os.path.join(args.input_path, image_name)
-        output_path = os.path.join(args.output_path, f"axes_{image_name}")
-        processor.process_image(image_path, output_path)
-    if args.debug: print("Image processing completed.")
+        # Process each PDF directory in the input directory
+        if self.debug: print("Starting image processing...")
+        for pdf_name in tqdm(os.listdir(input_path), desc="Processing PDF directories"):
+            pdf_dir_path = os.path.join(input_path, pdf_name)
+            if os.path.isdir(pdf_dir_path):
+                for image_name in os.listdir(pdf_dir_path):
+                    image_path = os.path.join(pdf_dir_path, image_name)
+                    if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
+                        output_image_path = os.path.join(output_path, pdf_name, f"axes_{image_name}")
+                        os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
+                        self.process_image(image_path, output_image_path)
+        if self.debug: print("Image processing completed.")
 
 if __name__ == "__main__":
     # Argument parser configuration
@@ -135,4 +130,15 @@ if __name__ == "__main__":
     parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
     args = parser.parse_args()
 
-    run_image_processing(args)
+    # Initialize ImageProcessor
+    processor = ImageProcessor(
+        cd_config_path=args.cdconfig,
+        cd_weights_path=args.cdweights,
+        lf_config_path=args.lfconfig,
+        lf_weights_path=args.lfweights,
+        device=args.device,
+        debug=args.debug
+    )
+
+    # Run image processing
+    processor.run_image_processing(args.input_path, args.output_path)
