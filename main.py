@@ -13,21 +13,16 @@ parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/
 parser.add_argument('--lfweights', default='./Image_detection/weights/weights.pth', type=str, help="Path to the model LineFormer weights file.")
 parser.add_argument('--cdconfig', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
 parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
-parser.add_argument('--input_path', default='./data/papers', type=str, help="Path to the directory containing input images.")
-parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where csv file will be saved.")
+parser.add_argument('--input_dir', default='./data/papers', type=str, help="Path to the directory containing input files.")
+parser.add_argument('--output_dir', default='./data/Line_output', type=str, help="Path to the directory where output files will be saved.")
 parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
-parser.add_argument('--query', default='machine learning', type=str, help="Search query for papers.")
+parser.add_argument('--query', default='Intrusion-Extrusion in nanoporous materials', type=str, help="Search query for papers.")
 parser.add_argument('--scholar_results', default=10, type=int, help="Number of scholar results.")
 parser.add_argument('--scholar_pages', default=1, type=int, help="Scholar pages to search.")
-parser.add_argument('--dwn_dir', default='./data/papers/', type=str, help="Directory to download papers.")
 parser.add_argument('--num_limit', default=5, type=int, help="Number limit for downloads.")
 parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
-parser.add_argument('--papers_folder', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
-parser.add_argument('--output_folder', default='./data', type=str, help="Path to the directory where papers will be downloaded.")
 parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
-parser.add_argument('--pdf_input_dir', default='./data/papers', type=str, help="Path to the directory containing PDF papers.")
-parser.add_argument('--pdf_output_dir', default='./data/papers', type=str, help="Path to the directory where output images will be saved.")
 args = parser.parse_args()
 
 start_time = time.time()  # Start timing
@@ -37,7 +32,7 @@ search_params = {
     "query": args.query,
     "scholar_results": args.scholar_results,
     "scholar_pages": '1'+'-' + str(args.scholar_pages),
-    "dwn_dir": args.dwn_dir,
+    "dwn_dir": args.input_dir,
     "proxy_list": None,
     "min_date": None,
     "max_date": None,
@@ -63,18 +58,18 @@ search_params = {
 
 # @PDFExtraction
 
-# Call the extract_text_from_pdf and extract_images_from_pdf functions for each PDF in the papers folder
-#for pdf_filename in os.listdir(args.papers_folder):
+# Call the extract_text_from_pdf and extract_images_from_pdf functions for each PDF in the input directory
+#for pdf_filename in os.listdir(args.input_dir):
 #    if pdf_filename.endswith('.pdf'):
-#        pdf_path = os.path.join(args.papers_folder, pdf_filename)
-#        extract_images_from_pdf(pdf_path, args.output_folder)
-#        extract_text_from_pdf(pdf_path, args.output_folder)
+#        pdf_path = os.path.join(args.input_dir, pdf_filename)
+#        extract_images_from_pdf(pdf_path, args.output_dir)
+#        extract_text_from_pdf(pdf_path, args.output_dir)
 
 # Initialize ImageInference
-inference = ImageInference(args.model_dir, classification=False)
+inference = ImageInference(args.model_dir, classification=True)
 
 # Use ImageInference to process the PDF
-inference.convert_pdf_to_images_and_infer(args.pdf_input_dir, args.pdf_output_dir)
+inference.convert_pdf_to_images_and_infer(args.input_dir, args.output_dir)
 
 # Initialize ImageProcessor
 processor = ImageProcessor(
@@ -87,7 +82,7 @@ processor = ImageProcessor(
 )
 
 # Run image processing
-#processor.run_image_processing(args.input_path, args.output_path)
+#processor.run_image_processing(args.input_dir, args.output_dir)
 
 # Call the run_assembler function when needed
 #run_assembler()
