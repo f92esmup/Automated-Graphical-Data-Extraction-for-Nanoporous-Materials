@@ -1,5 +1,6 @@
 import requests
 import xml.etree.ElementTree as ET
+import os
 
 def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
     # Construir la consulta con filtros adicionales
@@ -38,13 +39,13 @@ def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
         return
 
     for article in data.get('articles', []):
-        name = article.get('title', 'N/A')
-        doi = article.get('doi', 'N/A')
-        pdf_url = article.get('pdf_url', 'N/A')
-        year = article.get('publication_year', 'N/A')
-        journal = article.get('publication_title', 'N/A')
-        authors = ', '.join(author.get('full_name', 'N/A') for author in article.get('authors', {}).get('authors', []))
-        abstract = article.get('abstract', 'N/A')
+        name = article.get('title', None)
+        doi = article.get('doi', None)
+        pdf_url = article.get('pdf_url', None)
+        year = article.get('publication_year', None)
+        journal = article.get('publication_title', None)
+        authors = ', '.join(author.get('full_name', None) for author in article.get('authors', {}).get('authors', []))
+        abstract = article.get('abstract', None)
 
         args.append([name, doi, pdf_url, year, journal, authors, abstract])
 
@@ -57,6 +58,17 @@ def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
         print(f"Authors: {authors}")
         print(f"Abstract: {abstract}")
         print()
+
+        # Descargar el PDF
+        if pdf_url:
+            pdf_response = requests.get(pdf_url)
+            if pdf_response.status_code == 200:
+                pdf_filename = f"{doi.replace('/', '_')}.pdf"
+                with open(pdf_filename, 'wb') as pdf_file:
+                    pdf_file.write(pdf_response.content)
+                print(f"PDF descargado: {pdf_filename}")
+            else:
+                print(f"Error al descargar el PDF: {pdf_response.status_code}")
 
     return args
 

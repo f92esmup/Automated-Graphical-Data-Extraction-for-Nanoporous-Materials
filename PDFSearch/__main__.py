@@ -106,6 +106,10 @@ class PyPaperBot:
 
                 num += 1
                 i += 1
+        scopus = []
+        arxiv = []
+        ieex = []
+        
 
         if self.restrict != 0 and to_download:
             if self.filter_jurnal_file is not None:
