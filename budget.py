@@ -219,4 +219,11 @@ df = pd.DataFrame({
     'coste_total_imagen': [coste_total_imagen],
     'coste_total': [coste_total]
 })
+
+# Configurar pandas para mostrar todas las filas y columnas
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', None)
+
 print(df)
