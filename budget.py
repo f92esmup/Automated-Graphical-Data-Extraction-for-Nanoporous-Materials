@@ -7,7 +7,6 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 import matplotlib.pyplot as plt
 import google.generativeai as genai
-from PIL import Image
 
 def calcular_costo(ruta_pdf, costo_por_token, prompt=None, encoding=None, modelo='gpt'):
     # Leer el archivo PDF
@@ -48,23 +47,6 @@ def calcular_costo(ruta_pdf, costo_por_token, prompt=None, encoding=None, modelo
 
         return costo_total_pdf, total_tokens, numero_paginas
 
-def calcular_costo_imagen(ruta_imagen, costo_por_token, prompt, encoding=None):
-    if encoding is None:
-        encoding = tiktoken.get_encoding("cl100k_base")
-
-    with open(ruta_imagen, 'rb') as img_file:
-        img_data = img_file.read()
-
-    file = genai.upload_file(path=ruta_imagen, mime_type='image/jpeg')
-
-    tokens_prompt = encoding.encode(prompt)
-    tokens_file = encoding.encode(img_data)
-    total_tokens = len(tokens_prompt) + len(tokens_file)
-
-    costo_total_imagen = total_tokens * costo_por_token
-
-    return costo_total_imagen, total_tokens
-
 def calcular_costo_para_todos_archivos(carpeta, costo_por_token, encoding=None, modelo='gpt', prompt=None):
     if encoding is None:
         encoding = tiktoken.get_encoding("cl100k_base")
@@ -80,15 +62,6 @@ def calcular_costo_para_todos_archivos(carpeta, costo_por_token, encoding=None, 
                 'archivo': archivo,
                 'tipo': 'pdf',
                 'numero_paginas': numero_paginas,
-                'numero_tokens': tokens,
-                'costo_total': costo_total
-            })
-        elif archivo.endswith(('.png', '.jpg', '.jpeg')):
-            costo_total, tokens = calcular_costo_imagen(ruta_archivo, costo_por_token, prompt, encoding=encoding)
-            resultados.append({
-                'archivo': archivo,
-                'tipo': 'imagen',
-                'numero_paginas': 0,  # No consideramos las imágenes como páginas
                 'numero_tokens': tokens,
                 'costo_total': costo_total
             })
@@ -208,15 +181,13 @@ coste_medio_pdf = df_resultados_gemini[df_resultados_gemini['tipo'] == 'pdf']['c
 coste_medio_por_pagina = coste_medio_pdf / numero_medio_paginas
 
 coste_total_pdf = df_resultados_gemini[df_resultados_gemini['tipo'] == 'pdf']['costo_total'].sum()
-coste_total_imagen = df_resultados_gemini[df_resultados_gemini['tipo'] == 'imagen']['costo_total'].sum()
-coste_total = coste_total_pdf + coste_total_imagen
+coste_total = coste_total_pdf
 
 df = pd.DataFrame({
     'numero_medio_paginas': [numero_medio_paginas],
     'coste_medio_pdf': [coste_medio_pdf],
     'coste_medio_por_pagina': [coste_medio_por_pagina],
     'coste_total_pdf': [coste_total_pdf],
-    'coste_total_imagen': [coste_total_imagen],
     'coste_total': [coste_total]
 })
 
