@@ -1,9 +1,10 @@
 import requests
-import xml.etree.ElementTree as ET
 import os
 
-def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
-    # Construir la consulta con filtros adicionales
+def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_year=None):
+    if max_results is None:
+        max_results = 5
+
     args = []
 
     base_url = "https://ieeexploreapi.ieee.org/api/v1/search/articles"
@@ -39,31 +40,34 @@ def download_ieee_papers(query, max_results=1, start_year=None, end_year=None):
         return
 
     for article in data.get('articles', []):
-        name = article.get('title', None)
-        doi = article.get('doi', None)
-        pdf_url = article.get('pdf_url', None)
-        year = article.get('publication_year', None)
-        journal = article.get('publication_title', None)
-        authors = ', '.join(author.get('full_name', None) for author in article.get('authors', {}).get('authors', []))
-        abstract = article.get('abstract', None)
+        paper_info = {
+            "name": article.get('title', None),
+            "doi": article.get('doi', None),
+            "pdf_name": f"{article.get('doi', '').replace('/', '_')}.pdf" if article.get('doi') else None,
+            "year": article.get('publication_year', None),
+            "journal": article.get('publication_title', None),
+            "authors": ', '.join(author.get('full_name', None) for author in article.get('authors', {}).get('authors', [])),
+            "abstract": article.get('abstract', None)
+        }
 
-        args.append([name, doi, pdf_url, year, journal, authors, abstract])
+        args.append(paper_info)
 
         # Mostrar los metadatos de forma bonita
-        print(f"Title: {name}")
-        print(f"DOI: {doi}")
-        print(f"PDF URL: {pdf_url}")
-        print(f"Year: {year}")
-        print(f"Journal: {journal}")
-        print(f"Authors: {authors}")
-        print(f"Abstract: {abstract}")
+        print(f"Title: {paper_info['name']}")
+        print(f"DOI: {paper_info['doi']}")
+        print(f"PDF Name: {paper_info['pdf_name']}")
+        print(f"Year: {paper_info['year']}")
+        print(f"Journal: {paper_info['journal']}")
+        print(f"Authors: {paper_info['authors']}")
+        print(f"Abstract: {paper_info['abstract']}")
         print()
 
         # Descargar el PDF
+        pdf_url = article.get('pdf_url', None)
         if pdf_url:
             pdf_response = requests.get(pdf_url)
             if pdf_response.status_code == 200:
-                pdf_filename = f"{doi.replace('/', '_')}.pdf"
+                pdf_filename = os.path.join(dwn_dir, paper_info['pdf_name'])
                 with open(pdf_filename, 'wb') as pdf_file:
                     pdf_file.write(pdf_response.content)
                 print(f"PDF descargado: {pdf_filename}")
@@ -76,6 +80,6 @@ if __name__ == "__main__":
     query = "Nanoporous materials"
     start_year = 2020
     end_year = 2023
-    author = None
-    results = download_ieee_papers(query, start_year=start_year, end_year=end_year)
+    dwn_dir = "./downloads"
+    results = download_ieee_papers(query, dwn_dir, start_year=start_year, end_year=end_year)
     print(results)

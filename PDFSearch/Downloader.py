@@ -144,10 +144,10 @@ def download_arxiv_papers(query,dwn_dir, max_results=1, start_year=None, end_yea
     for result in client.results(search):
         paper_info = {
             "name": result.title,
-            "doi": result.doi if result.doi else "N/A",
+            "doi": result.doi if result.doi else None,
             "pdf_name": result.pdf_url.split('/')[-1] + ".pdf",
             "year": result.published.year,
-            "journal": result.journal_ref if result.journal_ref else "N/A",
+            "journal": result.journal_ref if result.journal_ref else None,
             "authors": ', '.join(author.name for author in result.authors),
             "abstract": result.summary
         }
@@ -158,9 +158,8 @@ def download_arxiv_papers(query,dwn_dir, max_results=1, start_year=None, end_yea
 
     return args
 
-def get_scopus_papers(query, max_results=1, start_year=None, end_year=None):
+def get_scopus_papers(query, max_results=1, start_year=None, end_year=None, api_key=None):
     base_url = "https://api.elsevier.com/content/search/scopus"
-    api_key = "8a51251f45eceafbd0ebfa005f9b7709"  # Reemplaza con tu clave de API de Scopus
 
     params = {
         "apikey": api_key,
@@ -218,8 +217,8 @@ def get_scopus_papers(query, max_results=1, start_year=None, end_year=None):
         papers.append(paper)
     return papers
 
-def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_year=None, SciHub_URL=None, SciDB_URL=None, restrict=0, scholar_pages="1-1", min_date=None, scholar_results=1, chrome_version=None, cites=None, skip_words=None):
-    scopus = get_scopus_papers(query, max_results, start_year, end_year)
+def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_year=None, SciHub_URL=None, SciDB_URL=None, restrict=0, scholar_pages="1-1", min_date=None, scholar_results=1, chrome_version=None, cites=None, skip_words=None, api_key=None):
+    scopus = get_scopus_papers(query, max_results, start_year, end_year, api_key=api_key)
     DOIs = [paper.DOI for paper in scopus if paper.DOI != 'N/A']
     to_download = []
     if restrict == 0:
@@ -264,3 +263,80 @@ def download_scopus_papers(query, dwn_dir, max_results=1, start_year=None, end_y
     downloadPapers(to_download, dwn_dir, max_results, SciHub_URL, SciDB_URL)
     #print(down, len(query),len(to_download))
     return scopus
+
+
+
+
+def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_year=None,api_key="445cefmjypbfptjgnzgtwzpt"):
+    if max_results is None:
+        max_results = 5
+
+    args = []
+
+    base_url = "https://ieeexploreapi.ieee.org/api/v1/search/articles"
+
+    params = {
+        "apikey": api_key,
+        "querytext": query,
+        "max_records": max_results,
+        "start_year": start_year,
+        "end_year": end_year,
+        "format": "json"  # Solicitar la respuesta en formato JSON
+    }
+
+    response = requests.get(base_url, params=params)
+
+    # Imprimir la respuesta para depuración
+    print("Status Code:", response.status_code)
+    print("Response Text:", response.text)
+
+    if response.status_code == 403:
+        print("Error: Developer Inactive. Verifica que tu clave de API está activa.")
+        return
+
+    if response.status_code != 200:
+        print("Error en la solicitud:", response.status_code)
+        return
+
+    try:
+        data = response.json()
+    except requests.exceptions.JSONDecodeError as e:
+        print("Error al decodificar JSON:", e)
+        return
+
+    for article in data.get('articles', []):
+        paper_info = {
+            "name": article.get('title', None),
+            "doi": article.get('doi', None),
+            "pdf_name": f"{article.get('doi', '').replace('/', '_')}.pdf" if article.get('doi') else None,
+            "year": article.get('publication_year', None),
+            "journal": article.get('publication_title', None),
+            "authors": ', '.join(author.get('full_name', None) for author in article.get('authors', {}).get('authors', [])),
+            "abstract": article.get('abstract', None)
+        }
+
+        args.append(paper_info)
+
+        # Mostrar los metadatos de forma bonita
+        print(f"Title: {paper_info['name']}")
+        print(f"DOI: {paper_info['doi']}")
+        print(f"PDF Name: {paper_info['pdf_name']}")
+        print(f"Year: {paper_info['year']}")
+        print(f"Journal: {paper_info['journal']}")
+        print(f"Authors: {paper_info['authors']}")
+        print(f"Abstract: {paper_info['abstract']}")
+        print()
+
+        # Descargar el PDF
+        pdf_url = article.get('pdf_url', None)
+        if pdf_url:
+            pdf_response = requests.get(pdf_url)
+            if pdf_response.status_code == 200:
+                pdf_filename = os.path.join(dwn_dir, paper_info['pdf_name'])
+                with open(pdf_filename, 'wb') as pdf_file:
+                    pdf_file.write(pdf_response.content)
+                print(f"PDF descargado: {pdf_filename}")
+            else:
+                print(f"Error al descargar el PDF: {pdf_response.status_code}")
+
+    return args

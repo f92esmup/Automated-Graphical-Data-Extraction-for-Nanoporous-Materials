@@ -9,7 +9,7 @@ import re
 import pandas as pd
 import urllib.parse
 
-import google.generativeai as genai
+#import google.generativeai as genai
 import PyPDF2
 import os
 
@@ -66,7 +66,7 @@ class Paper:
     def canBeDownloaded(self):
         return self.DOI is not None or self.scholar_link is not None
 
-    def generateReport(scopus, arxiv, papers, path, dwn_dir, eliminate_false_values=False):
+    def generateReport(ieeex,scopus, arxiv, papers, path, dwn_dir, eliminate_false_values=False):
         # Define the column names
         columns = ["Name", "Scholar Link", "DOI", "PDF Name",
                    "Year", "Scholar page", "Journal", "Downloaded",
@@ -129,6 +129,24 @@ class Paper:
                 "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
             })
 
+        for r in ieeex:
+            if r['pdf_name'] is not None:
+                r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
+            # Append row data as a dictionary
+            data.append({
+                "Name": r["name"] if r["name"] is not None else "not found",
+                "Scholar Link": "not found",  # No scholar link in result
+                "DOI": r["doi"] if r["doi"] is not None else "not found",
+                "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
+                "Year": r["year"] if r["year"] is not None else "not found",
+                "Scholar page": "not found",  # No scholar page in result
+                "Journal": r["journal"] if r["journal"] is not None else "not found",
+                "Downloaded": True,  # Assuming downloaded
+                "Downloaded from": "IEEEX",  # Downloaded from Arxiv
+                "Authors": r["authors"] if r["authors"] is not None else "not found",
+                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
+            })
+
         for r in scopus:
             pdf_name = r.title.replace(' ', '_') + ".pdf"
             pdf_path = os.path.join(dwn_dir, pdf_name)
@@ -147,6 +165,8 @@ class Paper:
             "Authors": r.authors if r.authors is not None else "not found",
             "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' ') if r.abstract is not None else "not found",  # Include abstract in the report
             })
+        
+
 
 
         # Eliminate duplicates or False values

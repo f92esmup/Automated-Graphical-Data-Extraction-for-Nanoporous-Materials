@@ -6,7 +6,7 @@ import time
 import requests
 from .Paper import Paper
 from .PapersFilters import filterJurnals, filter_min_date, similarStrings
-from .Downloader import downloadPapers, download_arxiv_papers, download_scopus_papers, get_scopus_papers
+from .Downloader import downloadPapers, download_arxiv_papers, download_scopus_papers, get_scopus_papers, download_ieee_papers
 from .Scholar import ScholarPapersInfo
 from .Crossref import getPapersInfoFromDOIs
 from .proxy import proxy
@@ -17,7 +17,7 @@ class PyPaperBot:
     def __init__(self, query=None, scholar_results=10, scholar_pages=1, dwn_dir=None, proxy_list=None, min_date=None, max_date=None, 
                  num_limit=None, num_limit_type=None, filter_jurnal_file=None, restrict=None, DOIs=None, SciHub_URL=None, 
                  chrome_version=None, cites=None, use_doi_as_filename=False, SciDB_URL=None, skip_words=None, 
-                 single_proxy=None, doi_file=None, eliminate_false_values = False):
+                 single_proxy=None, doi_file=None, eliminate_false_values = False, IEEX_API_KEY=None, SCOPUS_API_KEY="8a51251f45eceafbd0ebfa005f9b7709"):
         # Query to make on Google Scholar or Google Scholar page link
         self.query = query
         # Number of scholar results to be downloaded when --scholar-pages=1
@@ -60,6 +60,9 @@ class PyPaperBot:
         self.max_date = max_date
 
         self.eliminate_false_values = eliminate_false_values
+
+        self.IEEX_API_KEY = IEEX_API_KEY
+        self.SCOPUS_API_KEY = SCOPUS_API_KEY
     def checkVersion(self):
         try:
             print("PyPaperBot v" + __version__)
@@ -108,7 +111,7 @@ class PyPaperBot:
                 i += 1
         scopus = []
         arxiv = []
-        ieex = []
+        ieeex = []
         
 
         if self.restrict != 0 and to_download:
@@ -124,12 +127,20 @@ class PyPaperBot:
             if self.num_limit_type is not None and self.num_limit_type == 1:
                 to_download.sort(key=lambda x: int(x.cites_num) if x.cites_num is not None else 0, reverse=True)
             
+            ############### ARXIV DOWNLOAD ################
             arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
             downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
             ############### SCOPUES DOWNLOAD ################
-            scopus = download_scopus_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, SciHub_URL=self.SciHub_URL, SciDB_URL=self.SciDB_URL, restrict=self.restrict, min_date=self.min_date, chrome_version=self.chrome_version, cites=self.cites, skip_words=self.skip_words)
+            if self.SCOPUS_API_KEY is not None:
+                print("Downloading papers from Scopus")
+                scopus = download_scopus_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, SciHub_URL=self.SciHub_URL, SciDB_URL=self.SciDB_URL, restrict=self.restrict, min_date=self.min_date, chrome_version=self.chrome_version, cites=self.cites, skip_words=self.skip_words, api_key=self.SCOPUS_API_KEY)
             ############### ---------------- ################
-        Paper.generateReport(scopus,arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, eliminate_false_values=self.eliminate_false_values)
+            ############### IEEEX DOWNLOAD ################
+            if self.IEEX_API_KEY is not None:
+                print("Downloading papers from IEEE Xplore")
+                ieeex = download_ieee_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, api_key=self.IEEX_API_KEY)
+            ############### ---------------- ################
+        Paper.generateReport(ieeex,scopus,arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, eliminate_false_values=self.eliminate_false_values)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):
