@@ -4,3 +4,12 @@ model/data/
 model/result/
 model/checkpoint/
 Pruebas/
+__pycache__/
+AI/__pycache__/
+AI/Gemini/__pycache__/
+DataAssembler/__pycache__
+Image_detection/__pycache__
+Image_detection/ChartDete/__pycache__
+Image_detection/Line_detection/__pycache__
+PDFExraction/__pycache__
+PDFSearch/__pycache__
