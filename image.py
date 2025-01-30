@@ -45,22 +45,7 @@ class ImageProcessor:
 
             X_label_ROI, Y_label_ROI, plot_area_ROI, _, x_numbers_ROI, y_numbers_ROI, title_ROI, x_ticks_ROI, y_ticks_ROI, legend_points_ROI, legend_text_ROI, _, legend_area_ROI, _, _, y_area_ROI, x_area_ROI, _ = result
 
-            # Filter ROIs by confidence and define colors for each group
-            rois_dict = {
-                'x_numbers': {'rois': utilities.filter_rois_by_confidence(x_numbers_ROI), 'color': (0, 255, 0)},
-                'y_numbers': {'rois': utilities.filter_rois_by_confidence(y_numbers_ROI), 'color': (255, 0, 0)},
-                'x_label': {'rois': utilities.filter_rois_by_confidence(X_label_ROI), 'color': (0, 0, 255)},
-                'y_label': {'rois': utilities.filter_rois_by_confidence(Y_label_ROI), 'color': (255, 255, 0)},
-                'title': {'rois': utilities.filter_rois_by_confidence(title_ROI), 'color': (255, 0, 255)},
-                'x_ticks': {'rois': utilities.filter_rois_by_confidence(x_ticks_ROI), 'color': (0, 255, 255)},
-                'y_ticks': {'rois': utilities.filter_rois_by_confidence(y_ticks_ROI), 'color': (128, 0, 128)},
-                'legend_points': {'rois': utilities.filter_rois_by_confidence(legend_points_ROI), 'color': (128, 128, 0)},
-                'legend_text': {'rois': utilities.filter_rois_by_confidence(legend_text_ROI), 'color': (0, 128, 128)},
-                'legend_area': {'rois': utilities.filter_rois_by_confidence(legend_area_ROI), 'color': (128, 128, 128)},
-                'y_area': {'rois': utilities.filter_rois_by_confidence(y_area_ROI), 'color': (64, 64, 64)},
-                'x_area': {'rois': utilities.filter_rois_by_confidence(x_area_ROI), 'color': (192, 192, 192)},
-            }
-
+            
             result_json = self.gemini_processor.process_image_with_gemini(image_path)
             if self.debug: print(f"Processed image with Gemini for {image_path}")
 

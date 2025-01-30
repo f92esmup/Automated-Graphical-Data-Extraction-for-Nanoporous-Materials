@@ -14,16 +14,18 @@ RUN git clone https://f92esmup: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@github.c
 # Establece el directorio de trabajo al repositorio clonado
 WORKDIR /CICProject
 
+# Upgrade pip to the latest version
+RUN pip install --upgrade pip
+
 # Instala PyTorch
 RUN pip install torch torchvision torchaudio
 
 # Install OpenMIM and MMDetection dependencies
 RUN pip install -U openmim \
-    && mim install mmengine \
-    && mim install mmcv-full \
-    && git clone https://github.com/open-mmlab/mmdetection.git /CICProject/Image_detection/mmdetection
+    #&& mim install mmengine \
+    && mim install mmcv-full 
 
-RUN pip install -e /CICProject/Image_detection/mmdetection
+RUN pip install -v -e /CICProject/Image_detection/ChartDete
 
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt
