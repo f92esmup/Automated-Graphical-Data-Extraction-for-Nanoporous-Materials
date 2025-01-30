@@ -4,8 +4,12 @@ from image import ImageProcessor  # Import ImageProcessor class
 import argparse
 import os
 import time  # Add import for time module
+import torch  # Add import for torch module
 #from PDFExraction.T_I_extraction_PDF import extract_text_from_pdf, extract_images_from_pdf
 from PDFExraction.Extract_image_from_PDF import ImageInference
+
+# Determine the device to use
+DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
@@ -19,7 +23,7 @@ parser.add_argument('--cdconfig', default='./weights/cascade_rcnn_swin-t_fpn_LGF
 parser.add_argument('--lfconfig', default='./weights/lineformer_swin_t_config.py', type=str, help="Path to the model LineFormer configuration file.")
 parser.add_argument('--input_dir', default='./data/papers', type=str, help="Path to the directory containing input files.")
 parser.add_argument('--output_dir', default='./data/Line_output', type=str, help="Path to the directory where output files will be saved.")
-parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
+parser.add_argument('--device', default=DEVICE, type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
 parser.add_argument('--query', default='Intrusion-Extrusion in nanoporous materials', type=str, help="Search query for papers.")
 parser.add_argument('--scholar_results', default=10, type=int, help="Number of scholar results.")
