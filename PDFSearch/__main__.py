@@ -17,7 +17,7 @@ class PyPaperBot:
     def __init__(self, query=None, scholar_results=10, scholar_pages=1, dwn_dir=None, proxy_list=None, min_date=None, max_date=None, 
                  num_limit=None, num_limit_type=None, filter_jurnal_file=None, restrict=None, DOIs=None, SciHub_URL=None, 
                  chrome_version=None, cites=None, use_doi_as_filename=False, SciDB_URL=None, skip_words=None, 
-                 single_proxy=None, doi_file=None, eliminate_false_values = False, IEEX_API_KEY=None, SCOPUS_API_KEY="8a51251f45eceafbd0ebfa005f9b7709"):
+                 single_proxy=None, doi_file=None, eliminate_false_values = False, IEEX_API_KEY=None, SCOPUS_API_KEY="8a51251f45eceafbd0ebfa005f9b7709", Method=True):
         # Query to make on Google Scholar or Google Scholar page link
         self.query = query
         # Number of scholar results to be downloaded when --scholar-pages=1
@@ -63,6 +63,8 @@ class PyPaperBot:
 
         self.IEEX_API_KEY = IEEX_API_KEY
         self.SCOPUS_API_KEY = SCOPUS_API_KEY
+
+        self.method = Method
     def checkVersion(self):
         try:
             print("PyPaperBot v" + __version__)
@@ -74,45 +76,50 @@ class PyPaperBot:
             pass
 
     def start(self):
-        if self.SciDB_URL is not None and "/scidb" not in self.SciDB_URL:
-            self.SciDB_URL = urljoin(self.SciDB_URL, "/scidb/")
 
         to_download = []
-        if self.DOIs is None:
-            print("Query: {}".format(self.query))
-            print("Cites: {}".format(self.cites))
-            if isinstance(self.scholar_pages, str):
-                try:
-                    split = self.scholar_pages.split('-')
-                    if len(split) == 1:
-                        self.scholar_pages = range(1, int(split[0]) + 1)
-                    elif len(split) == 2:
-                        start_page, end_page = [int(x) for x in split]
-                        self.scholar_pages = range(start_page, end_page + 1)
-                    else:
-                        raise ValueError
-                except Exception:
-                    print(
-                        r"Error: Invalid format for --scholar-pages option. Expected: %d or %d-%d, got: " + self.scholar_pages)
-                    sys.exit()
-            to_download = ScholarPapersInfo(self.query, self.scholar_pages, self.restrict, self.min_date, self.scholar_results, self.chrome_version, self.cites, self.skip_words)
-        else:
-            print("Downloading papers from DOIs\n")
-            num = 1
-            i = 0
-            while i < len(self.DOIs):
-                DOI = self.DOIs[i]
-                print("Searching paper {} of {} with DOI {}".format(num, len(self.DOIs), DOI))
-                papersInfo = getPapersInfoFromDOIs(DOI, self.restrict)
-                papersInfo.use_doi_as_filename = self.use_doi_as_filename
-                to_download.append(papersInfo)
-
-                num += 1
-                i += 1
         scopus = []
         arxiv = []
         ieeex = []
-        
+
+        if self.method:
+            if self.SciDB_URL is not None and "/scidb" not in self.SciDB_URL:
+                self.SciDB_URL = urljoin(self.SciDB_URL, "/scidb/")
+
+            if self.DOIs is None:
+                print("Query: {}".format(self.query))
+                print("Cites: {}".format(self.cites))
+                if isinstance(self.scholar_pages, str):
+                    try:
+                        split = self.scholar_pages.split('-')
+                        if len(split) == 1:
+                            self.scholar_pages = range(1, int(split[0]) + 1)
+                        elif len(split) == 2:
+                            start_page, end_page = [int(x) for x in split]
+                            self.scholar_pages = range(start_page, end_page + 1)
+                        else:
+                            raise ValueError
+                    except Exception:
+                        print(
+                            r"Error: Invalid format for --scholar-pages option. Expected: %d or %d-%d, got: " + self.scholar_pages)
+                        sys.exit()
+                to_download = ScholarPapersInfo(self.query, self.scholar_pages, self.restrict, self.min_date, self.scholar_results, self.chrome_version, self.cites, self.skip_words)
+            else:
+                print("Downloading papers from DOIs\n")
+                num = 1
+                i = 0
+                while i < len(self.DOIs):
+                    DOI = self.DOIs[i]
+                    print("Searching paper {} of {} with DOI {}".format(num, len(self.DOIs), DOI))
+                    papersInfo = getPapersInfoFromDOIs(DOI, self.restrict)
+                    papersInfo.use_doi_as_filename = self.use_doi_as_filename
+                    to_download.append(papersInfo)
+
+                    num += 1
+                    i += 1
+        else: 
+            print("Query: {}".format(self.query))
+
 
         if self.restrict != 0 and to_download:
             if self.filter_jurnal_file is not None:
@@ -126,93 +133,91 @@ class PyPaperBot:
 
             if self.num_limit_type is not None and self.num_limit_type == 1:
                 to_download.sort(key=lambda x: int(x.cites_num) if x.cites_num is not None else 0, reverse=True)
-            
-            ############### ARXIV DOWNLOAD ################
-            arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
-            downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
-            ############### SCOPUES DOWNLOAD ################
-            if self.SCOPUS_API_KEY is not None:
-                print("Downloading papers from Scopus")
-                scopus = download_scopus_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, SciHub_URL=self.SciHub_URL, SciDB_URL=self.SciDB_URL, restrict=self.restrict, min_date=self.min_date, chrome_version=self.chrome_version, cites=self.cites, skip_words=self.skip_words, api_key=self.SCOPUS_API_KEY)
-            ############### ---------------- ################
-            ############### IEEEX DOWNLOAD ################
-            if self.IEEX_API_KEY is not None:
-                print("Downloading papers from IEEE Xplore")
-                ieeex = download_ieee_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, api_key=self.IEEX_API_KEY)
-            ############### ---------------- ################
+        
+        
+        ############### ARXIV DOWNLOAD ################
+        arxiv = download_arxiv_papers(self.query,self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=None)
+        downloadPapers(to_download, self.dwn_dir, self.num_limit, self.SciHub_URL, self.SciDB_URL)
+        ############### SCOPUES DOWNLOAD ################
+        if self.SCOPUS_API_KEY is not None:
+            print("Downloading papers from Scopus")
+            scopus = download_scopus_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, SciHub_URL=self.SciHub_URL, SciDB_URL=self.SciDB_URL, restrict=self.restrict, min_date=self.min_date, chrome_version=self.chrome_version, cites=self.cites, skip_words=self.skip_words, api_key=self.SCOPUS_API_KEY)
+        ############### ---------------- ################
+        ############### IEEEX DOWNLOAD ################
+        if self.IEEX_API_KEY is not None:
+            print("Downloading papers from IEEE Xplore")
+            ieeex = download_ieee_papers(self.query, self.dwn_dir, max_results=self.num_limit, start_year=self.min_date, end_year=self.max_date, api_key=self.IEEX_API_KEY)
+        ############### ---------------- ################
+
         Paper.generateReport(ieeex,scopus,arxiv, to_download, self.dwn_dir + "search.csv", self.dwn_dir, eliminate_false_values=self.eliminate_false_values)
         #Paper.generateBibtex(to_download, self.dwn_dir + "bibtex.bib")
 
     def main(self):
-        if self.single_proxy is not None:
-            os.environ['http_proxy'] = self.single_proxy
-            os.environ['HTTP_PROXY'] = self.single_proxy
-            os.environ['https_proxy'] = self.single_proxy
-            os.environ['HTTPS_PROXY'] = self.single_proxy
-            print("Using proxy: ", self.single_proxy)
-        else:
-            proxy(self.proxy_list)
+        if self.method:  # Replace 'some_condition' with your actual condition
+            if self.single_proxy is not None:
+                os.environ['http_proxy'] = self.single_proxy
+                os.environ['HTTP_PROXY'] = self.single_proxy
+                os.environ['https_proxy'] = self.single_proxy
+                os.environ['HTTPS_PROXY'] = self.single_proxy
+                print("Using proxy: ", self.single_proxy)
+            else:
+                proxy(self.proxy_list)
 
-        if self.query is None and self.DOIs is None and self.cites is None:
-            print("Error, provide at least one of the following arguments: --query, --doi, or --cites")
-            sys.exit()
+            if self.query is None and self.DOIs is None and self.cites is None:
+                print("Error, provide at least one of the following arguments: --query, --doi, or --cites")
+                sys.exit()
 
-        if (self.query is not None and self.DOIs is not None) or (self.query is not None and self.cites is not None) or (
+            if (self.query is not None and self.DOIs is not None) or (self.query is not None and self.cites is not None) or (
                 self.DOIs is not None and self.cites is not None):
-            print("Error: Only one option between '--query', '--doi' and '--cites' can be used")
-            sys.exit()
+                print("Error: Only one option between '--query', '--doi' and '--cites' can be used")
+                sys.exit()
 
-        if self.dwn_dir is None:
-            print("Error, provide the directory path in which to save the results")
-            sys.exit()
+            if self.dwn_dir is None:
+                print("Error, provide the directory path in which to save the results")
+                sys.exit()
 
-        if self.scholar_results != 10 and self.scholar_pages != 1:
-            print("Scholar results best applied along with --scholar-pages=1")
+            if self.scholar_results != 10 and self.scholar_pages != 1:
+                print("Scholar results best applied along with --scholar-pages=1")
 
-        dwn_dir = self.dwn_dir.replace('\\', '/')
-        if dwn_dir[-1] != '/':
-            dwn_dir += "/"
-        if not os.path.exists(dwn_dir):
-            os.makedirs(dwn_dir, exist_ok=True)
+            dwn_dir = self.dwn_dir.replace('\\', '/')
+            if dwn_dir[-1] != '/':
+                dwn_dir += "/"
+            if not os.path.exists(dwn_dir):
+                os.makedirs(dwn_dir, exist_ok=True)
 
-        if self.num_limit is not None and self.num_limit_type is not None:
-            print("Error: Only one option between '--max-dwn-year' and '--max-dwn-cites' can be used ")
-            sys.exit()
+            if self.num_limit is not None and self.num_limit_type is not None:
+                print("Error: Only one option between '--max-dwn-year' and '--max-dwn-cites' can be used ")
+                sys.exit()
 
-        if self.query is not None or self.cites is not None:
-            if self.scholar_pages:
-                try:
-                    split = self.scholar_pages.split('-')
-                    if len(split) == 1:
-                        self.scholar_pages = range(1, int(split[0]) + 1)
-                    elif len(split) == 2:
-                        start_page, end_page = [int(x) for x in split]
-                        self.scholar_pages = range(start_page, end_page + 1)
-                    else:
-                        raise ValueError
-                except Exception:
-                    print(
-                        r"Error: Invalid format for --scholar-pages option. Expected: %d or %d-%d, got: " + self.scholar_pages)
+            if self.query is not None or self.cites is not None:
+                if self.scholar_pages:
+                    try:
+                        split = self.scholar_pages.split('-')
+                        if len(split) == 1:
+                            self.scholar_pages = range(1, int(split[0]) + 1)
+                        elif len(split) == 2:
+                            start_page, end_page = [int(x) for x in split]
+                            self.scholar_pages = range(start_page, end_page + 1)
+                        else:
+                            raise ValueError
+                    except Exception:
+                        print(
+                            r"Error: Invalid format for --scholar-pages option. Expected: %d or %d-%d, got: " + self.scholar_pages)
+                        sys.exit()
+                else:
+                    print("Error: with --query provide also --scholar-pages")
                     sys.exit()
             else:
-                print("Error: with --query provide also --scholar-pages")
-                sys.exit()
-        else:
-            self.scholar_pages = 0
+                self.scholar_pages = 0
 
-        if self.DOIs is None and self.doi_file is not None:
-            self.DOIs = []
-            f = self.doi_file.replace('\\', '/')
-            with open(f) as file_in:
-                for line in file_in:
-                    if line[-1] == '\n':
-                        self.DOIs.append(line[:-1])
-                    else:
-                        self.DOIs.append(line)
+            if self.DOIs is None and self.doi_file is not None:
+                self.DOIs = []
+                f = self.doi_file.replace('\\', '/')
+                with open(f) as file_in:
+                    for line in file_in:
+                        if line[-1] == '\n':
+                            self.DOIs.append(line[:-1])
+                        else:
+                            self.DOIs.append(line)
 
         self.start()
-
-if __name__ == "__main__":
-    bot = PyPaperBot(query="Machine learning", scholar_pages="1-3", dwn_dir="./data/papers2/", doi_file="path/to/doi_file.txt")
-    bot.checkVersion()
-    bot.main()

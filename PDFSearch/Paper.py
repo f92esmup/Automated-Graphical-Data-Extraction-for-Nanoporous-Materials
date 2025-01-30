@@ -74,97 +74,99 @@ class Paper:
 
         # Prepare data to populate the DataFrame
         data = []
+        if papers is not None:
+            for p in papers:
+                pdf_name = p.getFileName() if p.downloaded else ""
+                bibtex_found = p.bibtex is not None
 
-        for p in papers:
-            pdf_name = p.getFileName() if p.downloaded else ""
-            bibtex_found = p.bibtex is not None
+                # Determine download source
+                dwn_from = ""
+                if p.downloadedFrom == 1:
+                    dwn_from = "SciDB"
+                elif p.downloadedFrom == 2:
+                    dwn_from = "SciHub"
+                elif p.downloadedFrom == 3:
+                    dwn_from = "Scholar"
 
-            # Determine download source
-            dwn_from = ""
-            if p.downloadedFrom == 1:
-                dwn_from = "SciDB"
-            elif p.downloadedFrom == 2:
-                dwn_from = "SciHub"
-            elif p.downloadedFrom == 3:
-                dwn_from = "Scholar"
-
-            
-            # Replace spaces with _-_ in authors' names
-            if p.authors:
-                p.authors = p.authors.replace(';', '_-_')
+                
+                # Replace spaces with _-_ in authors' names
+                if p.authors:
+                    p.authors = p.authors.replace(';', '_-_')
 
 
-            # Append row data as a dictionary
-            data.append({
-                "Name": p.title if p.title is not None else "not found",
-                "Scholar Link": p.scholar_link if p.scholar_link is not None else "not found",
-                "DOI": p.DOI if p.DOI is not None else "not found",
-                #"Bibtex": bibtex_found,
+                # Append row data as a dictionary
+                data.append({
+                    "Name": p.title if p.title is not None else "not found",
+                    "Scholar Link": p.scholar_link if p.scholar_link is not None else "not found",
+                    "DOI": p.DOI if p.DOI is not None else "not found",
+                    #"Bibtex": bibtex_found,
+                    "PDF Name": pdf_name if pdf_name is not None else "not found",
+                    "Year": p.year if p.year is not None else "not found",
+                    "Scholar page": p.scholar_page if p.scholar_page is not None else "not found",
+                    "Journal": p.jurnal if p.jurnal is not None else "not found",
+                    "Downloaded": p.downloaded,
+                    "Downloaded from": dwn_from if dwn_from is not None else "not found",
+                    "Authors": p.authors if p.authors is not None else "not found",
+                    "Abstract": p.abstract,  # Include abstract in the report
+                })
+
+        if arxiv is not None:
+            for r in arxiv:
+                if r['pdf_name'] is not None:
+                    r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
+                # Append row data as a dictionary
+                data.append({
+                    "Name": r["name"] if r["name"] is not None else "not found",
+                    "Scholar Link": "not found",  # No scholar link in result
+                    "DOI": r["doi"] if r["doi"] is not None else "not found",
+                    "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
+                    "Year": r["year"] if r["year"] is not None else "not found",
+                    "Scholar page": "not found",  # No scholar page in result
+                    "Journal": r["journal"] if r["journal"] is not None else "not found",
+                    "Downloaded": True,  # Assuming downloaded
+                    "Downloaded from": "Arxiv",  # Downloaded from Arxiv
+                    "Authors": r["authors"] if r["authors"] is not None else "not found",
+                    "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
+                })
+
+        if ieeex is not None:
+            for r in ieeex:
+                if r['pdf_name'] is not None:
+                    r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
+                # Append row data as a dictionary
+                data.append({
+                    "Name": r["name"] if r["name"] is not None else "not found",
+                    "Scholar Link": "not found",  # No scholar link in result
+                    "DOI": r["doi"] if r["doi"] is not None else "not found",
+                    "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
+                    "Year": r["year"] if r["year"] is not None else "not found",
+                    "Scholar page": "not found",  # No scholar page in result
+                    "Journal": r["journal"] if r["journal"] is not None else "not found",
+                    "Downloaded": True,  # Assuming downloaded
+                    "Downloaded from": "IEEEX",  # Downloaded from Arxiv
+                    "Authors": r["authors"] if r["authors"] is not None else "not found",
+                    "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
+                })
+
+        if scopus is not None:
+            for r in scopus:
+                pdf_name = r.title.replace(' ', '_') + ".pdf"
+                pdf_path = os.path.join(dwn_dir, pdf_name)
+                downloaded = os.path.exists(pdf_path)
+                # Append row data as a dictionary
+                data.append({
+                "Name": r.title if r.title is not None else "not found",
+                "Scholar Link": r.scholar_link if r.scholar_link is not None else "not found",
+                "DOI": r.DOI if r.DOI is not None else "not found",
                 "PDF Name": pdf_name if pdf_name is not None else "not found",
-                "Year": p.year if p.year is not None else "not found",
-                "Scholar page": p.scholar_page if p.scholar_page is not None else "not found",
-                "Journal": p.jurnal if p.jurnal is not None else "not found",
-                "Downloaded": p.downloaded,
-                "Downloaded from": dwn_from if dwn_from is not None else "not found",
-                "Authors": p.authors if p.authors is not None else "not found",
-                "Abstract": p.abstract,  # Include abstract in the report
-            })
-
-        
-        for r in arxiv:
-            if r['pdf_name'] is not None:
-                r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
-            # Append row data as a dictionary
-            data.append({
-                "Name": r["name"] if r["name"] is not None else "not found",
-                "Scholar Link": "not found",  # No scholar link in result
-                "DOI": r["doi"] if r["doi"] is not None else "not found",
-                "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
-                "Year": r["year"] if r["year"] is not None else "not found",
-                "Scholar page": "not found",  # No scholar page in result
-                "Journal": r["journal"] if r["journal"] is not None else "not found",
-                "Downloaded": True,  # Assuming downloaded
-                "Downloaded from": "Arxiv",  # Downloaded from Arxiv
-                "Authors": r["authors"] if r["authors"] is not None else "not found",
-                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
-            })
-
-        for r in ieeex:
-            if r['pdf_name'] is not None:
-                r['pdf_name'] = r['pdf_name'].replace('pdf', '') + r['name'].replace(' ', '_') + ".pdf"
-            # Append row data as a dictionary
-            data.append({
-                "Name": r["name"] if r["name"] is not None else "not found",
-                "Scholar Link": "not found",  # No scholar link in result
-                "DOI": r["doi"] if r["doi"] is not None else "not found",
-                "PDF Name": r["pdf_name"] if r["pdf_name"] is not None else "not found",
-                "Year": r["year"] if r["year"] is not None else "not found",
-                "Scholar page": "not found",  # No scholar page in result
-                "Journal": r["journal"] if r["journal"] is not None else "not found",
-                "Downloaded": True,  # Assuming downloaded
-                "Downloaded from": "IEEEX",  # Downloaded from Arxiv
-                "Authors": r["authors"] if r["authors"] is not None else "not found",
-                "Abstract": r["abstract"].replace('\n', ' ').replace('\r', ' ') if r["abstract"] is not None else "not found",  # Include abstract in the report
-            })
-
-        for r in scopus:
-            pdf_name = r.title.replace(' ', '_') + ".pdf"
-            pdf_path = os.path.join(dwn_dir, pdf_name)
-            downloaded = os.path.exists(pdf_path)
-            # Append row data as a dictionary
-            data.append({
-            "Name": r.title if r.title is not None else "not found",
-            "Scholar Link": r.scholar_link if r.scholar_link is not None else "not found",
-            "DOI": r.DOI if r.DOI is not None else "not found",
-            "PDF Name": pdf_name if pdf_name is not None else "not found",
-            "Year": r.year if r.year is not None else "not found",
-            "Scholar page": r.scholar_page if r.scholar_page is not None else "not found",
-            "Journal": r.jurnal if r.jurnal is not None else "not found",
-            "Downloaded": downloaded,
-            "Downloaded from": "Scopus",  # Downloaded from Scopus
-            "Authors": r.authors if r.authors is not None else "not found",
-            "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' ') if r.abstract is not None else "not found",  # Include abstract in the report
-            })
+                "Year": r.year if r.year is not None else "not found",
+                "Scholar page": r.scholar_page if r.scholar_page is not None else "not found",
+                "Journal": r.jurnal if r.jurnal is not None else "not found",
+                "Downloaded": downloaded,
+                "Downloaded from": "Scopus",  # Downloaded from Scopus
+                "Authors": r.authors if r.authors is not None else "not found",
+                "Abstract": r.abstract.replace('\n', ' ').replace('\r', ' ') if r.abstract is not None else "not found",  # Include abstract in the report
+                })
         
 
 

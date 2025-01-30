@@ -17,6 +17,9 @@ WORKDIR /CICProject
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt
 
+#RUN pip install --no-cache-dir -r requirements.txt
+RUN mim install mmcv-full
+
 # Set the Hugging Face token as an environment variable
 ENV HUGGINGFACE_API_KEY=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
 
