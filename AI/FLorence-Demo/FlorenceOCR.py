@@ -13,7 +13,7 @@ model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True)
 processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
 
 # Load and preprocess the image
-image_path = "/ruta/a/tu/imagen.png"
+image_path = "/Users/f92esmup/CICProject/AI/FLorence-Demo/image.png"
 image = Image.open(image_path).convert("RGB")
 prompt = "<OCR>"
 
