@@ -8,19 +8,19 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Instala Git
 RUN apt-get update && apt-get install -y git
 
-# Clona el repositorio usando el token de acceso personal
-#RUN git clone https://github.com/f92esmup/CICProject.git /app
-
-# Copia el contenido del directorio actual al contenedor en /app
-COPY . /app
+# Clone the GitHub repository using a personal access token
+RUN git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
 # Establece el directorio de trabajo al repositorio clonado
-WORKDIR /app
+WORKDIR /CICProject
 
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt
 
-# Downloads the necessary weights and configuration files by running the Download_weights&configs.py script
+# Set the Hugging Face token as an environment variable
+ENV HUGGINGFACE_API_KEY=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
+
+# Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
 
 # Especifica el comando para ejecutar tu aplicación
