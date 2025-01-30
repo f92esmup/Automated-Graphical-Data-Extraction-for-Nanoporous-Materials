@@ -14,11 +14,19 @@ RUN git clone https://f92esmup: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@github.c
 # Establece el directorio de trabajo al repositorio clonado
 WORKDIR /CICProject
 
+# Instala PyTorch
+RUN pip install torch torchvision torchaudio
+
+# Install OpenMIM and MMDetection dependencies
+RUN pip install -U openmim \
+    && mim install mmengine \
+    && mim install mmcv-full \
+    && git clone https://github.com/open-mmlab/mmdetection.git /CICProject/Image_detection/mmdetection
+
+RUN pip install -e /CICProject/Image_detection/mmdetection
+
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt
-
-#RUN pip install --no-cache-dir -r requirements.txt
-RUN mim install mmcv-full
 
 # Set the Hugging Face token as an environment variable
 ENV HUGGINGFACE_API_KEY=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

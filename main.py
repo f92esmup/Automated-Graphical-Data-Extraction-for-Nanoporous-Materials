@@ -93,7 +93,7 @@ processor = ImageProcessor(
 )
 
 # Run image processing
-#processor.run_image_processing(args.input_dir, args.output_dir)
+processor.run_image_processing(args.output_dir, args.output_dir)
 
 # Call the run_assembler function when needed
 #run_assembler()
