@@ -65,7 +65,7 @@ search_params = {
 }
 
 # Call the run_search function with parameters
-#run_search(search_params)
+run_search(search_params)
 
 # @PDFExtraction
 
