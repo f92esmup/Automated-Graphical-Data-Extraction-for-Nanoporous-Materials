@@ -6,7 +6,7 @@ repo_id = "pedro12g/endpoint"
 download_dir = "weights"
 
 # Check for Hugging Face authentication token
-token = os.getenv('HUGGINGFACE_TOKEN')
+token = "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"
 if not token:
     print("No Hugging Face token found. Please log in.")
     login()
