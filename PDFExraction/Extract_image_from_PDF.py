@@ -169,7 +169,7 @@ class ImageInference:
 if __name__ == "__main__":
     # Example usage: Replace with your model path and directory path
     model_path = "./AI/FLorence-Demo/florence2-lora" # Replace with your model path
-    pdf_input_dir = "/home/pedro/CICProject/data/DemoPapers" # Replace with your PDF input directory
+    pdf_input_dir = "/home/pedro/CICProject/data/papers" # Replace with your PDF input directory
     output_dir = "./data/papers" # Replace with your output directory
     
     # Load the model and perform inference

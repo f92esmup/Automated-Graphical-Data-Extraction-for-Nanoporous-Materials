@@ -14,3 +14,4 @@ Image_detection/Line_detection/__pycache__
 PDFExraction/__pycache__
 PDFSearch/__pycache__
 .conda/
+notebooks/

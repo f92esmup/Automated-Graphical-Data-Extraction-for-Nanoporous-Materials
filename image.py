@@ -105,11 +105,11 @@ class ImageProcessor:
 if __name__ == "__main__":
     # Argument parser configuration
     parser = argparse.ArgumentParser(description="Run inference on input images with a pretrained DETR model.")
-    parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/checkpoint.pth', type=str, help="Path to the model ChartDete weights file.")
-    parser.add_argument('--lfweights', default='./Image_detection/weights/weights.pth', type=str, help="Path to the model LineFormer weights file.")
-    parser.add_argument('--cdconfig', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
-    parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
-    parser.add_argument('--input_path', default='./data/DemoImages', type=str, help="Path to the directory containing input images.")
+    parser.add_argument('--cdweights', default='./weights/checkpoint.pth', type=str, help="Path to the model ChartDete weights file.")
+    parser.add_argument('--lfweights', default='./weights/iter_3000.pth', type=str, help="Path to the model LineFormer weights file.")
+    parser.add_argument('--cdconfig', default='./weights/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py', type=str, help="Path to the model ChartDete configuration file.")
+    parser.add_argument('--lfconfig', default='./weights/lineformer_swin_t_config.py', type=str, help="Path to the model LineFormer configuration file.")
+    parser.add_argument('--input_path', default='./data/papers', type=str, help="Path to the directory containing input images.")
     parser.add_argument('--output_path', default='./data/Line_output', type=str, help="Path to the directory where output will be saved.")
     parser.add_argument('--device', default='cpu', type=str, help="Device to run the model on (cpu or cuda).")
     parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
