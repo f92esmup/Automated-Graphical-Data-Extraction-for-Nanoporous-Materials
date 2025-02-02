@@ -8,6 +8,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Instala Git
 RUN apt-get update && apt-get install -y git
 
+RUN apt-get install -y poppler-utils
+RUN apt-get update && apt-get install -y libgl1-mesa-glx
 # Clone the GitHub repository using a personal access token
 RUN git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
@@ -29,6 +31,7 @@ RUN pip install -v -e /CICProject/Image_detection/ChartDete
 
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt 
+RUN pip install google.generativeai
 
 # Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
