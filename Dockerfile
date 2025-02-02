@@ -20,17 +20,18 @@ WORKDIR /CICProject
 RUN pip install --upgrade pip
 
 # Instala PyTorch
-RUN pip install torch torchvision torchaudio
+#RUN pip install torch torchvision torchaudio
 
 # Install OpenMIM and MMDetection dependencies
-RUN pip install -U openmim \
+#RUN pip install -U openmim \
     #&& mim install mmengine \
-    && mim install mmcv-full 
+#    && mim install mmcv-full 
 
-RUN pip install -v -e /CICProject/Image_detection/ChartDete
+#RUN pip install -v -e /CICProject/Image_detection/ChartDete
 
 # Installs the required Python packages listed in the requirements.txt file
 RUN pip install -r requirements.txt 
+RUN mim install mmcv-full
 RUN pip install google.generativeai
 
 # Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
