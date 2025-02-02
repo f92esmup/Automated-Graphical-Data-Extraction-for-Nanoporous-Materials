@@ -11,3 +11,54 @@
 
 He incluido que la extracción de texto y clasificación se pueda desactivar.
 
+## Docker
+Crear la imagen:
+```bash
+docker build -t cicproject .
+```
+
+Crear el contenedor:
+```bash
+sudo docker run -v ./data:/cicproject/data --name cicproject-container -d cicproject
+```
+-d: datached mode, ejecuta el contenedor en segundo plano
+poner docker run --rm -v ...  elimina el contenedor una vez ha terminado su ejecución.
+
+
+## Instalación
+Para instalar las utilidades necesarias, ejecute el siguiente comando:
+```bash
+sudo apt-get install poppler-utils
+```
+Para instalar las dependencias necesarias, ejecute el siguiente comando:
+```bash
+pip install torch torchvision torchaudio
+pip install -q transformers timm einops peft
+pip install Pillow
+pip install supervision
+
+
+pip install bibtexparser
+pip install PyPDF2
+pip install arxiv
+pip install beautifulsoup4
+pip install undetected_chromedriver
+pip install crossref_commons
+pip install pyChainedProxy
+pip install terminaltables
+pip install bresenham
+pip install pdf2image
+pip install pandas
+pip install google.generativeai
+pip install pycocotools
+
+
+
+pip install -U openmim
+
+pip install --upgrade setuptools
+
+mim install mmcv-full 
+
+
+```

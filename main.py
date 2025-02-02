@@ -61,7 +61,7 @@ search_params = {
     "eliminate_false_values": False,
     "IEEX_API_KEY": None,
     "SCOPUS_API_KEY": None, #"8a51251f45eceafbd0ebfa005f9b7709",
-    "Method": True
+    "Method": False
 }
 
 # Call the run_search function with parameters
