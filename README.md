@@ -19,7 +19,7 @@ docker build -t cicproject .
 
 Crear el contenedor:
 ```bash
-sudo docker run -v ./data:/cicproject/data --name cicproject-container -d cicproject
+sudo docker run -v ./data:/CICProject/data --name cicproject-container -d cicproject
 ```
 -d: datached mode, ejecuta el contenedor en segundo plano
 poner docker run --rm -v ...  elimina el contenedor una vez ha terminado su ejecución.
