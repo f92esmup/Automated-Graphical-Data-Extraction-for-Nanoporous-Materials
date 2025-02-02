@@ -28,10 +28,7 @@ RUN pip install -U openmim \
 RUN pip install -v -e /CICProject/Image_detection/ChartDete
 
 # Installs the required Python packages listed in the requirements.txt file
-RUN pip install HuggingFace_hub 
-
-# Set the Hugging Face token as an environment variable
-ENV HUGGINGFACE_API_KEY=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
+RUN pip install -r requirements.txt 
 
 # Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py

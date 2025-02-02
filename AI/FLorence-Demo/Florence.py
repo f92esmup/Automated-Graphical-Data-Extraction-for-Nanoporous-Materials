@@ -6,7 +6,7 @@ import os
 import time
 
 # Set Hugging Face API key
-#os.environ["HF_API_KEY"] = "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"
+os.environ["HF_API_KEY"] = "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"
 
 # Disable tokenizers parallelism warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     start_time = time.time()  # Start timing
 
     # Example usage: Replace with your model path and image path
-    model_path = "./AI/FLorence-Demo/florence2-lora" # Replace with your model path
-    image_path = "./AI/FLorence-Demo/page.png" # Replace with your image path
+    model_path = "/home/user/CICProject/AI/FLorence-Demo/florence2-lora" # Replace with your model path
+    image_path = "/home/user/CICProject/AI/FLorence-Demo/page2.png" # Replace with your image path
     inference_from_image(model_path, image_path)
 
     end_time = time.time()  # End timing

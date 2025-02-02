@@ -61,11 +61,11 @@ search_params = {
     "eliminate_false_values": False,
     "IEEX_API_KEY": None,
     "SCOPUS_API_KEY": None, #"8a51251f45eceafbd0ebfa005f9b7709",
-    "Method": False
+    "Method": True
 }
 
 # Call the run_search function with parameters
-#run_search(search_params)
+run_search(search_params)
 
 # @PDFExtraction
 
@@ -96,7 +96,7 @@ processor = ImageProcessor(
 processor.run_image_processing(args.output_dir, args.output_dir)
 
 # Call the run_assembler function when needed
-#run_assembler()
+run_assembler()
 
 end_time = time.time()  # End timing
 print(f"Total execution time: {end_time - start_time} seconds")  # Print the total execution time
