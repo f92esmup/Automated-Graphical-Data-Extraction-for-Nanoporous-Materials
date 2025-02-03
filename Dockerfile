@@ -6,10 +6,8 @@ ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Instala Git y otras dependencias
 RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y git \
     && apt-get install -y poppler-utils \
     && apt-get install -y libgl1-mesa-glx
-
 
 
 
@@ -45,14 +43,14 @@ RUN pip install torch torchvision torchaudio \
 
 
 
-# Clone the GitHub repository using a personal access token
-RUN git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
+# Copia los archivos de la aplicación en el contenedor
+COPY . /CICProject
 
-# Establece el directorio de trabajo al repositorio clonado
+# Establece el directorio de trabajo al directorio copiado
 WORKDIR /CICProject
 
 # Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
 
 # Especifica el comando para ejecutar tu aplicación
-CMD ["python", "main.py"]
+#CMD ["python", "main.py"]
