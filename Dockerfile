@@ -45,6 +45,7 @@ RUN pip install torch torchvision torchaudio \
 
 # Copia los archivos de la aplicación en el contenedor
 COPY . /CICProject
+#git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
 # Establece el directorio de trabajo al directorio copiado
 WORKDIR /CICProject
