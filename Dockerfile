@@ -38,10 +38,8 @@ RUN pip install torch torchvision torchaudio \
     && pip install google.generativeai \
     && pip install -U openmim \
     && pip install --upgrade setuptools \
-    && mim install mmcv-full
-    #&& pip install pycocotools
-
-RUN pip install pycocotools
+    && mim install mmcv-full \
+    && pip install pycocotools
 
 ###########################################
 
