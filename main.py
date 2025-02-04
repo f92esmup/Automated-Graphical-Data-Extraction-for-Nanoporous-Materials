@@ -32,7 +32,7 @@ parser.add_argument('--scholar_pages', default=1, type=int, help="Scholar pages 
 parser.add_argument('--num_limit', default=5, type=int, help="Number limit for downloads.")
 #parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
 parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
-
+parser.add_argument('--search_method', action='store_true', default=False, help="Enable the search method.")
 # Parse API arguments
 parser.add_argument('--gemini_api_key', default='AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc', type=str, help="API key for GEMINI.")
 parser.add_argument('--ieex_api_key', default=None, type=str, help="API key for IEEX.")
@@ -77,7 +77,7 @@ search_params = {
     "eliminate_false_values": False,
     "IEEX_API_KEY": args.ieex_api_key,
     "SCOPUS_API_KEY": args.scopus_api_key,
-    "Method": False
+    "Method": args.search_method
 }
 
 # Call the run_search function with parameters

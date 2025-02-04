@@ -19,6 +19,7 @@ from Image_detection.Line_detection.utils import process_image, save_and_plot_da
 from Image_detection.Line_detection.BB_Inference import LineInference
 #from Image_detection.Line_detection.mmdetection.mmdet.apis import init_detector, inference_detector
 from AI.Gemini.CEImage import GeminiImageProcessor
+import csv
 
 class ImageProcessor:
     def __init__(self, cd_config_path, cd_weights_path, lf_config_path, lf_weights_path, device, debug=False):
@@ -79,7 +80,17 @@ class ImageProcessor:
             line_dataseries_escal = utilities.rescale_line_dataseries(x_average_scale, y_average_scale, x_origin, y_origin, x_midpoints_dict, y_midpoints_dict, line_dataseries)
 
             # Save and plot the data series
-            save_and_plot_data(line_dataseries_escal, image_path, save_path=output_path)
+            #save_and_plot_data(line_dataseries_escal, image_path, save_path=output_path)
+            
+
+            with open(output_path + ".csv", mode='w', newline="") as datos_csv:
+                archivo = csv.writer(datos_csv)
+                archivo.writerow(['LineID', 'X', 'Y'])
+                for i, line in enumerate(line_dataseries_escal):
+                    for pt in line:
+                        archivo.writerow([i, pt[0], pt[1]])
+
+
             if self.debug: print(f"Data series saved and plotted for {image_path}")
         except Exception as e:
             print(f"Error processing {image_path}: {e}")
@@ -97,7 +108,7 @@ class ImageProcessor:
                 for image_name in os.listdir(pdf_dir_path):
                     image_path = os.path.join(pdf_dir_path, image_name)
                     if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-                        output_image_path = os.path.join(os.path.dirname(image_path), f"axes_{image_name}")
+                        output_image_path = os.path.join(pdf_dir_path, os.path.splitext(image_name)[0])
                         self.process_image(image_path, output_image_path)
         if self.debug: print("Image processing completed.")
 

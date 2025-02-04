@@ -15,4 +15,4 @@ PDFExraction/__pycache__
 PDFSearch/__pycache__
 .conda/
 notebooks/
-venv/
+.venv/
