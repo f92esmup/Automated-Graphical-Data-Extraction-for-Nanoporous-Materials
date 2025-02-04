@@ -1,21 +1,27 @@
-# Usa una imagen base con Git instalado
-FROM python:3.11
+# Use a base image with PyTorch and CUDA support
+FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-runtime
 
-# Establece la zona horaria
+# Install Python 3.9 or later
+RUN apt-get update && apt-get install -y python3.9 python3.9-distutils \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
+
+# Set the timezone
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-# Instala Git y otras dependencias
+
+# Install Git, build-essential (for C compiler), and other dependencies
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y poppler-utils \
-    && apt-get install -y libgl1-mesa-glx
+    && apt-get install -y libgl1-mesa-glx \
+    && apt-get install -y curl \
+    && apt-get install -y build-essential
 
+# Install Rust and Cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-
-
-
-#### REQUERIMIENTOS DE LA APLICACIÓN ####
 # Upgrade pip to the latest version
-RUN pip install --upgrade pip
+RUN python3 -m pip install --upgrade pip
 
 # Install required Python packages
 RUN pip install torch torchvision torchaudio \
@@ -39,19 +45,14 @@ RUN pip install torch torchvision torchaudio \
     && mim install mmcv-full \
     && pip install pycocotools
 
-###########################################
-
-
-
-# Copia los archivos de la aplicación en el contenedor
+# Copy the application files into the container
 COPY . /CICProject
-#git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
-# Establece el directorio de trabajo al directorio copiado
+# Set the working directory to the copied directory
 WORKDIR /CICProject
 
-# Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
+# Download the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
 
-# Especifica el comando para ejecutar tu aplicación
+# Specify the command to run your application
 CMD ["python", "main.py"]

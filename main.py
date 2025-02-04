@@ -33,6 +33,7 @@ parser.add_argument('--num_limit', default=5, type=int, help="Number limit for d
 #parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
 parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
 parser.add_argument('--search_method', action='store_true', default=False, help="Enable the search method.")
+parser.add_argument('--classification', action='store_true', default=False, help="Enable classification mode.")
 # Parse API arguments
 parser.add_argument('--gemini_api_key', default='AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc', type=str, help="API key for GEMINI.")
 parser.add_argument('--ieex_api_key', default=None, type=str, help="API key for IEEX.")
@@ -93,7 +94,7 @@ run_search(search_params)
 #        extract_text_from_pdf(pdf_path, args.output_dir)
 
 # Initialize ImageInference
-inference = ImageInference(args.model_dir, classification=True)
+inference = ImageInference(args.model_dir, classification=args.classification)
 
 # Use ImageInference to process the PDF
 inference.convert_pdf_to_images_and_infer(args.input_dir, args.output_dir)

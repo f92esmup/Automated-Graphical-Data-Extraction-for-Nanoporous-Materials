@@ -1,5 +1,5 @@
-# Usa una imagen base con CUDA y cuDNN preinstalados
-FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+# Usa una imagen base de PyTorch con soporte para CUDA
+FROM pytorch/pytorch:latest-cuda
 
 # Establece la zona horaria
 ENV TZ=Europe/Madrid
@@ -8,16 +8,13 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Instala Git y otras dependencias
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y poppler-utils \
-    && apt-get install -y libgl1-mesa-glx \
-    && apt-get install -y python3-pip \
-    && apt-get install -y libglib2.0-0
+    && apt-get install -y libgl1-mesa-glx
 
-#### REQUERIMIENTOS DE LA APLICACIÓN ####
 # Upgrade pip to the latest version
 RUN pip install --upgrade pip
 
-# Install required Python packages with CUDA support
-RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117 \
+# Install required Python packages
+RUN pip install torch torchvision torchaudio \
     && pip install -q transformers timm einops peft \
     && pip install Pillow \
     && pip install supervision \
@@ -35,10 +32,8 @@ RUN pip install torch torchvision torchaudio --extra-index-url https://download.
     && pip install google.generativeai \
     && pip install -U openmim \
     && pip install --upgrade setuptools \
-    && mim install mmcv-full --extra-index-url https://download.openmmlab.com/mmcv/dist/cu117/torch1.12.0/index.html \
+    && mim install mmcv-full \
     && pip install pycocotools
-
-###########################################
 
 # Copia los archivos de la aplicación en el contenedor
 COPY . /CICProject
@@ -50,4 +45,4 @@ WORKDIR /CICProject
 RUN python Download_weights_configs.py
 
 # Especifica el comando para ejecutar tu aplicación
-CMD ["python3", "main.py"]
+CMD ["python", "main.py"]
