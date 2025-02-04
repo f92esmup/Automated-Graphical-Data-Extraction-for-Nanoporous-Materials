@@ -33,6 +33,15 @@ sudo apt-get install poppler-utils
 Para instalar las dependencias necesarias, ejecute el siguiente comando:
 ```bash
 pip install torch torchvision torchaudio
+
+pip install -U openmim
+
+pip install --upgrade setuptools
+
+mim install mmcv-full 
+
+
+
 pip install -q transformers timm einops peft
 pip install Pillow
 pip install supervision
@@ -51,14 +60,4 @@ pip install pdf2image
 pip install pandas
 pip install google.generativeai
 pip install pycocotools
-
-
-
-pip install -U openmim
-
-pip install --upgrade setuptools
-
-mim install mmcv-full 
-
-
 ```

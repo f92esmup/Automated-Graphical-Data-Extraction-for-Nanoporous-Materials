@@ -97,8 +97,7 @@ class ImageProcessor:
                 for image_name in os.listdir(pdf_dir_path):
                     image_path = os.path.join(pdf_dir_path, image_name)
                     if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-                        output_image_path = os.path.join(output_path, pdf_name, f"axes_{image_name}")
-                        os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
+                        output_image_path = os.path.join(pdf_dir_path, f"axes_{image_name}")
                         self.process_image(image_path, output_image_path)
         if self.debug: print("Image processing completed.")
 
