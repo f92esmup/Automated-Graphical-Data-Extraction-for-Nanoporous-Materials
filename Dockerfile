@@ -54,4 +54,4 @@ WORKDIR /CICProject
 RUN python Download_weights_configs.py
 
 # Especifica el comando para ejecutar tu aplicación
-#CMD ["python", "main.py"]
+CMD ["python", "main.py"]
