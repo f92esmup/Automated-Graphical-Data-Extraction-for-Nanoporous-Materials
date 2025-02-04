@@ -58,7 +58,7 @@ class ImageInference:
                 x1, y1, x2, y2 = bbox
                 try:
                     cropped_image = image.crop((x1, y1, x2, y2))
-                    cropped_image_path = os.path.join(output_dir, f'page_{page_number}_{j + 1}.png')
+                    cropped_image_path = os.path.join(output_dir, f'image_{page_number}_{j + 1}.png')
                     cropped_image.save(cropped_image_path)
                 except Exception as e:
                     print(f"Error cropping image: {e}")

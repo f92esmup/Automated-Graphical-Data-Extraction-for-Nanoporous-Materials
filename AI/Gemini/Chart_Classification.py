@@ -16,7 +16,7 @@ class ChartClassification:
         self._configure_api()
 
     def _configure_api(self):
-        os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
+        #os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
     def _create_model(self):

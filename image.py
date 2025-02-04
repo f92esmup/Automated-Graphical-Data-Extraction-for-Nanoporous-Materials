@@ -33,7 +33,7 @@ class ImageProcessor:
         if debug: print("Models loaded successfully.")
 
         # Set the API key in the environment variables
-        os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
+        #os.environ["GEMINI_API_KEY"] = 'AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc'
         api_key = os.environ["GEMINI_API_KEY"]
         genai.configure(api_key=api_key)
 
@@ -79,7 +79,7 @@ class ImageProcessor:
             line_dataseries_escal = utilities.rescale_line_dataseries(x_average_scale, y_average_scale, x_origin, y_origin, x_midpoints_dict, y_midpoints_dict, line_dataseries)
 
             # Save and plot the data series
-            save_and_plot_data(line_dataseries_escal, image_path)
+            save_and_plot_data(line_dataseries_escal, image_path, save_path=output_path)
             if self.debug: print(f"Data series saved and plotted for {image_path}")
         except Exception as e:
             print(f"Error processing {image_path}: {e}")
@@ -97,7 +97,7 @@ class ImageProcessor:
                 for image_name in os.listdir(pdf_dir_path):
                     image_path = os.path.join(pdf_dir_path, image_name)
                     if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-                        output_image_path = os.path.join(pdf_dir_path, f"axes_{image_name}")
+                        output_image_path = os.path.join(os.path.dirname(image_path), f"axes_{image_name}")
                         self.process_image(image_path, output_image_path)
         if self.debug: print("Image processing completed.")
 

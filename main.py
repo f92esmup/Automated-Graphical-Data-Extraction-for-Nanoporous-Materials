@@ -11,6 +11,7 @@ from PDFExraction.Extract_image_from_PDF import ImageInference
 # Determine the device to use
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
+
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
 #parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/checkpoint.pth', type=str, help="Path to the model ChartDete weights file.")
@@ -22,15 +23,30 @@ parser.add_argument('--cdconfig', default='./weights/cascade_rcnn_swin-t_fpn_LGF
 #parser.add_argument('--lfconfig', default='./Image_detection/Line_detection/config.py', type=str, help="Path to the model LineFormer configuration file.")
 parser.add_argument('--lfconfig', default='./weights/lineformer_swin_t_config.py', type=str, help="Path to the model LineFormer configuration file.")
 parser.add_argument('--input_dir', default='./data/papers', type=str, help="Path to the directory containing input files.")
-parser.add_argument('--output_dir', default='./data/Line_output', type=str, help="Path to the directory where output files will be saved.")
+parser.add_argument('--output_dir', default='./data/Output', type=str, help="Path to the directory where output files will be saved.")
 parser.add_argument('--device', default=DEVICE, type=str, help="Device to run the model on (cpu or cuda).")
 parser.add_argument('--debug', action='store_true', default=False, help="Enable debug mode to print debugging information.")
 parser.add_argument('--query', default='Intrusion-Extrusion in nanoporous materials', type=str, help="Search query for papers.")
 parser.add_argument('--scholar_results', default=10, type=int, help="Number of scholar results.")
 parser.add_argument('--scholar_pages', default=1, type=int, help="Scholar pages to search.")
 parser.add_argument('--num_limit', default=5, type=int, help="Number limit for downloads.")
-parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
+#parser.add_argument('--description', default="The document should focus on the processes of liquid intrusion and extrusion in confined media, either from a theoretical or experimental perspective. It may include analysis of physical properties such as wettability, hydrophobicity, surface tension, and bubble nucleation. The document should also discuss technological applications such as energy storage, liquid separation, or chromatography, as well as implications for biological or bioinspired systems. Relevant theoretical models could include confined classical nucleation theories (cCNT), experimental methods such as liquid porosimetry or calorimetry, and atomistic or DFT-based simulations. Keywords should include terms like 'intrusion-extrusion', 'wetting-drying', 'hydrophobicity-lyophobicity', 'nucleation', and 'nanoporous materials.'", type=str, help="Description for the search.")
 parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', type=str, help="Path to the model directory.")
+
+# Parse API arguments
+parser.add_argument('--gemini_api_key', default='AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc', type=str, help="API key for GEMINI.")
+parser.add_argument('--ieex_api_key', default=None, type=str, help="API key for IEEX.")
+parser.add_argument('--scopus_api_key', default=None, type=str, help="API key for SCOPUS.")
+# Parse arguments
+args = parser.parse_args()
+
+# Set the GEMINI_API_KEY environment variable
+try:
+    os.environ["GEMINI_API_KEY"] = args.gemini_api_key
+except Exception as e:
+    print(f"GEMINI_API_KEY not set: {e}")
+    pass
+
 args = parser.parse_args()
 
 start_time = time.time()  # Start timing
@@ -59,8 +75,8 @@ search_params = {
     "doi_file": None,
     #"description": args.description,
     "eliminate_false_values": False,
-    "IEEX_API_KEY": None,
-    "SCOPUS_API_KEY": None, #"8a51251f45eceafbd0ebfa005f9b7709",
+    "IEEX_API_KEY": args.ieex_api_key,
+    "SCOPUS_API_KEY": args.scopus_api_key,
     "Method": False
 }
 
