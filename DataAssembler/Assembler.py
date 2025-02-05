@@ -7,7 +7,7 @@ def run_assembler():
     analyzer = GraphDocumentAnalysis(debug=False)
     # Crear un DataFrame vacío con las columnas especificadas
     #columns = ['graph', 'paper', 'errors', 'confidence_score', 'properties']
-    columns = ['graph', 'paper', 'errors', 'properties']
+    columns = ['chart', 'paper', 'properties']
     df = pd.DataFrame(columns=columns)
 
     # Recorrer los directorios de imágenes y PDFs
@@ -27,9 +27,9 @@ def run_assembler():
                     properties = analyzer.analyze_graph_and_document(image_path, pdf_path)
                     #errors = ---
                     rows.append({
-                        'graph': image_file,
+                        'chart': image_file,
                         'paper': pdf_file,
-                        'errors': None,
+                        #'errors': None,
                         #'confidence_score': None,
                         'properties': properties
                     })

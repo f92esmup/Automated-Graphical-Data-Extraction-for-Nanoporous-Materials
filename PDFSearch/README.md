@@ -146,22 +146,6 @@ python -m PyPaperBot --query=rheumatoid+arthritis --scholar-pages=1 --scholar-re
 
 In termux, you can directly use ```PyPaperBot``` followed by arguments...
 
-## Contributions
-
-Feel free to contribute to this project by proposing any change, fix, and enhancement on the **dev** branch
-
-### To do
-
-- Tests
-- Code documentation
-- General improvements
-
 ## Disclaimer
 
 This application is for educational purposes only. I do not take responsibility for what you choose to do with this application.
-
-## Donation
-
-If you like this project, you can give me a cup of coffee :) 
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/ferru97)
