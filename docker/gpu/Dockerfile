@@ -1,5 +1,5 @@
 # Usa una imagen base con soporte para PyTorch y CUDA
-FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-runtime
+FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04
 
 # Set the timezone
 ENV TZ=Europe/Madrid
@@ -23,7 +23,9 @@ RUN apt-get update && apt-get install -y \
     tk-dev \
     curl \
     python3-venv \
-    libffi-dev \ 
+    libffi-dev \
+    lsb-release \
+    poppler-utils \ 
     && rm -rf /var/lib/apt/lists/*
 
 #Update GCC and G++
@@ -46,34 +48,47 @@ RUN wget https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz \
     && cd .. \
     && rm -rf Python-3.9.7 Python-3.9.7.tgz
 
-# Establece Python 3.9 como predeterminado
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.9 1
+# Establece Python 3.9 como predeterminado y asegúrate de que pip esté disponible
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.9 1 \
+    && ln -s /usr/local/bin/pip3.9 /usr/local/bin/pip
 
-# Upgrade pip to the latest version
+# Asegúrate de que pip esté disponible en el PATH
+ENV PATH="/usr/local/bin:${PATH}"
+
+# Instala pip explícitamente
+RUN wget https://bootstrap.pypa.io/get-pip.py && python3.9 get-pip.py && rm get-pip.py
+
+# Instala lsb-release antes de actualizar pip
+RUN apt-get update && apt-get install -y lsb-release
+
+# Upgrade pip to the latest version using python3.9
 RUN python3.9 -m pip install --upgrade pip
 
-# Instala los paquetes de Python requeridos en el entorno virtual usando python3.9 explícitamente
-RUN python3.9 -m pip install torch torchvision torchaudio \
-    && python3.9 -m pip install -q transformers timm einops peft \
-    && python3.9 -m pip install Pillow \
-    && python3.9 -m pip install supervision \
-    && python3.9 -m pip install bibtexparser \
-    && python3.9 -m pip install PyPDF2 \
-    && python3.9 -m pip install arxiv \
-    && python3.9 -m pip install beautifulsoup4 \
-    && python3.9 -m pip install undetected_chromedriver \
-    && python3.9 -m pip install crossref_commons \
-    && python3.9 -m pip install pyChainedProxy \
-    && python3.9 -m pip install terminaltables \
-    && python3.9 -m pip install bresenham \
-    && python3.9 -m pip install pdf2image \
-    && python3.9 -m pip install pandas \
-    && python3.9 -m pip install -U openmim \
-    && python3.9 -m pip install --upgrade setuptools \
-    && python3.9 -m mim install mmcv-full \
-    && python3.9 -m pip install pycocotools
+# Instala distro después de actualizar pip
+RUN python3.9 -m pip install distro
 
-RUN python3.9 -m pip install google.generativeai
+# Instala los paquetes de Python requeridos en el entorno virtual usando pip
+RUN pip install torch torchvision torchaudio \
+    && pip install -q transformers timm einops peft \
+    && pip install Pillow \
+    && pip install supervision \
+    && pip install bibtexparser \
+    && pip install PyPDF2 \
+    && pip install arxiv \
+    && pip install beautifulsoup4 \
+    && pip install undetected_chromedriver \
+    && pip install crossref_commons \
+    && pip install pyChainedProxy \
+    && pip install terminaltables \
+    && pip install bresenham \
+    && pip install pdf2image \
+    && pip install pandas \
+    && pip install -U openmim \
+    && pip install --upgrade setuptools \
+    && pip install mmcv-full \
+    && pip install pycocotools
+
+RUN pip install google.generativeai
 
 # Copia los archivos de la aplicación al contenedor
 COPY . /CICProject
