@@ -1,13 +1,15 @@
-# Usa una imagen base con soporte para PyTorch y CUDA
-FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-runtime
+# Use a base Python image
+FROM python:3.11-slim
 
 # Set the timezone
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Instala las dependencias necesarias
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
+    curl \
+    ca-certificates \
     build-essential \
     libssl-dev \
     zlib1g-dev \
@@ -21,65 +23,69 @@ RUN apt-get update && apt-get install -y \
     libexpat1-dev \
     liblzma-dev \
     tk-dev \
-    curl \
-    python3-venv \
+    libffi-dev \
+    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala Rust y Cargo
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Add NVIDIA package repositories
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.2.89-1_amd64.deb && \
+    dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub && \
+    apt-get update && \
+    apt-get install -y cuda
 
-# Descarga e instala Python 3.11
-RUN wget https://www.python.org/ftp/python/3.11.0/Python-3.11.0.tgz \
-    && tar xzf Python-3.11.0.tgz \
-    && cd Python-3.11.0 \
-    && ./configure --enable-optimizations \
-    && make altinstall \
-    && cd .. \
-    && rm -rf Python-3.11.0 Python-3.11.0.tgz
+# Install cuDNN
+RUN apt-get install -y libcudnn7
 
-# Establece Python 3.11 como predeterminado
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.11 1
 
-# Crea un entorno virtual
-RUN python3 -m venv /opt/venv
+# Instala otras dependencias
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y poppler-utils \
+    && apt-get install -y libgl1-mesa-glx
 
-# Activa el entorno virtual y actualiza pip
-ENV PATH="/opt/venv/bin:$PATH"
+
+
+
+
+#### REQUERIMIENTOS DE LA APLICACIÓN ####
+# Upgrade pip to the latest version
 RUN pip install --upgrade pip
 
-# Instala los paquetes de Python requeridos en el entorno virtual
-RUN pip install torch torchvision torchaudio
-RUN pip install -q transformers timm einops peft
-RUN pip install Pillow
-RUN pip install supervision
-RUN pip install bibtexparser
-RUN pip install PyPDF2
-RUN pip install arxiv
-RUN pip install beautifulsoup4
-RUN pip install undetected_chromedriver
-RUN pip install crossref_commons
-RUN pip install pyChainedProxy
-RUN pip install terminaltables
-RUN pip install bresenham
-RUN pip install pdf2image
-RUN pip install pandas
-RUN pip install -U openmim
-RUN pip install --upgrade setuptools
-RUN mim install mmcv-full
-RUN pip install pycocotools
+# Install required Python packages
+RUN pip install torch torchvision torchaudio \
+    && pip install -q transformers timm einops peft \
+    && pip install Pillow \
+    && pip install supervision \
+    && pip install bibtexparser \
+    && pip install PyPDF2 \
+    && pip install arxiv \
+    && pip install beautifulsoup4 \
+    && pip install undetected_chromedriver \
+    && pip install crossref_commons \
+    && pip install pyChainedProxy \
+    && pip install terminaltables \
+    && pip install bresenham \
+    && pip install pdf2image \
+    && pip install pandas \
+    && pip install google.generativeai \
+    && pip install -U openmim \
+    && pip install --upgrade setuptools \
+    && mim install mmcv-full \
+    && pip install pycocotools
 
-# Copia los archivos de la aplicación al contenedor
+###########################################
+
+
+
+# Copia los archivos de la aplicación en el contenedor
 COPY . /CICProject
+#git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
-# Establece el directorio de trabajo
+# Establece el directorio de trabajo al directorio copiado
 WORKDIR /CICProject
 
-# Descarga los pesos y archivos de configuración necesarios ejecutando el script Download_weights_configs.py
+# Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
-
-
-RUN pip install google.generativeai
 
 # Especifica el comando para ejecutar tu aplicación
 CMD ["python", "main.py"]
