@@ -27,10 +27,14 @@ class ImageProcessor:
         self.debug = debug
         self.gemini_processor = GeminiImageProcessor(debug=debug)
         
-        # Load models once
-        self.cd_model = init_detector(cd_config_path, cd_weights_path, device=device)
-        self.lf_inference = LineInference(config=lf_config_path, ckpt=lf_weights_path, device=device)
-        
+        try:
+            # Load models once
+            self.cd_model = init_detector(cd_config_path, cd_weights_path, device=device)
+            self.lf_inference = LineInference(config=lf_config_path, ckpt=lf_weights_path, device=device)
+        except Exception as e:
+            print(f"Error loading weights or device issue: {e}")
+            sys.exit(1)
+            
         if debug: print("Models loaded successfully.")
 
         # Set the API key in the environment variables

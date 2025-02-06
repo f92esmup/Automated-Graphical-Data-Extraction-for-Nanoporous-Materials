@@ -32,6 +32,8 @@ sudo apt-get install poppler-utils
 ```
 Para instalar las dependencias necesarias, ejecute el siguiente comando:
 ```bash
+pip install --upgrade pip
+
 pip install torch torchvision torchaudio
 
 pip install -U openmim
