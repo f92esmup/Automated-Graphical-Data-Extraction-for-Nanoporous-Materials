@@ -16,3 +16,4 @@ PDFSearch/__pycache__
 .conda/
 notebooks/
 .venv/
+.DS_Store/
