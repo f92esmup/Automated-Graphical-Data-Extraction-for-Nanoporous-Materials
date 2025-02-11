@@ -7,7 +7,6 @@ import os
 #api_key = os.environ["GEMINI_API_KEY"]
 #genai.configure(api_key=api_key)
 
-
 def get_pdfs(params):
     # Check if the output directory exists, if not, create it
     output_dir = params.get("dwn_dir", "./data/papers/")

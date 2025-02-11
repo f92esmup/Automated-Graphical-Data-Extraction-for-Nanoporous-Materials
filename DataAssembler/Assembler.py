@@ -1,16 +1,16 @@
 import pandas as pd
 import os
-from AI.Gemini.Imageproperties import GraphDocumentAnalysis
+from MLmanager.Gemini.Imageproperties import GraphDocumentAnalysis
 from tqdm import tqdm
 
 def run_assembler():
     analyzer = GraphDocumentAnalysis(debug=False)
-    # Crear un DataFrame vacío con las columnas especificadas
+    # Create an empty DataFrame with the specified columns
     #columns = ['graph', 'paper', 'errors', 'confidence_score', 'properties']
     columns = ['chart', 'paper', 'properties']
     df = pd.DataFrame(columns=columns)
 
-    # Recorrer los directorios de imágenes y PDFs
+    # Iterate through the image and PDF directories
     data_dir = './data/papers'
     rows = []
     pdf_files = [f for f in os.listdir(data_dir) if f.endswith(".pdf")]
@@ -34,9 +34,9 @@ def run_assembler():
                         'properties': properties
                     })
 
-    # Convertir la lista de filas en un DataFrame y concatenar
+    # Convert the list of rows into a DataFrame and concatenate
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-    # Guardar el DataFrame en un archivo CSV
+    # Save the DataFrame to a CSV file
     df.to_csv('./data/dataset.csv', index=False)
 
 if __name__ == "__main__":

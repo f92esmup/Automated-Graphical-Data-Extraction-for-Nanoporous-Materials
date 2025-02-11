@@ -1,159 +1,159 @@
-import itertools  # Funciones eficientes para trabajar con iteradores en bucles.
-import numpy as np  # Biblioteca fundamental para computación científica.
-from scipy.interpolate import CubicSpline, interp1d  # Funciones para interpolación de datos.
+import itertools  # Efficient functions for working with iterators in loops.
+import numpy as np  # Fundamental library for scientific computing.
+from scipy.interpolate import CubicSpline, interp1d  # Functions for data interpolation.
 import os
 import sys
 
-# Configura el PYTHONPATH para importar `mmdet`
+# Configure PYTHONPATH to import `mmdet`
 project_root = './Line_detection'
 sys.path.append(os.path.join(project_root, 'mmdetection'))
 
-# Importaciones de mmdet y utils
+# Imports from mmdet and utils
 from mmdetection.mmdet.apis import inference_detector, init_detector
-import utils  # Módulo personalizado con funciones útiles para trabajar con líneas en imágenes.
+import utils  # Custom module with useful functions for working with lines in images.
 
 class LineInference:
     """
-    Clase para realizar inferencia y procesar los resultados de detección de instancias en imágenes.
+    Class for performing inference and processing instance detection results in images.
     """
 
     def __init__(self, config, ckpt, device='cpu'):
         """
-        Inicializa el modelo de detección con el archivo de configuración y punto de control.
+        Initialize the detection model with the configuration file and checkpoint.
         
-        Parámetros:
-        - config: Ruta al archivo de configuración del modelo.
-        - ckpt: Ruta al archivo de punto de control del modelo (checkpoint).
-        - device: Dispositivo en el que se ejecutará el modelo (por ejemplo, 'cuda:0' o 'cpu').
+        Parameters:
+        - config: Path to the model configuration file.
+        - ckpt: Path to the model checkpoint file.
+        - device: Device on which the model will be run (e.g., 'cuda:0' or 'cpu').
         """
-        # Declara la variable 'model' como global para accederla fuera de la función
+        # Declare the 'model' variable as global to access it outside the function
         self.model = init_detector(config, ckpt, device=device)
 
     def do_instance(self, img, score_thr=0.3):
         """
-        Realiza la detección de instancias en la imagen de entrada usando el modelo proporcionado.
+        Perform instance detection on the input image using the provided model.
 
-        Parámetros:
-        - img: Imagen de entrada en formato de array de numpy.
-        - score_thr: Umbral de puntuación para filtrar las detecciones.
+        Parameters:
+        - img: Input image in numpy array format.
+        - score_thr: Score threshold for filtering detections.
 
-        Retorna:
-        - inst_masks: Máscaras de instancias filtradas según el umbral de puntuación.
+        Returns:
+        - inst_masks: Instance masks filtered according to the score threshold.
         """
-        # Realiza la inferencia sobre la imagen de entrada usando el modelo
+        # Perform inference on the input image using the model
         result = inference_detector(self.model, img)
         
-        # Procesa los resultados de detección usando el umbral de puntuación especificado y devuelve los resultados filtrados
+        # Process the detection results using the specified score threshold and return the filtered results
         return self.parse_result(result, score_thr)
 
     @staticmethod
     def parse_result(result, score_thresh=0.3):
         """
-        Procesa los resultados de detección y filtra máscaras según el umbral de puntuación.
+        Process detection results and filter masks according to the score threshold.
 
-        Parámetros:
-        - result: Resultados de detección devueltos por el modelo.
-        - score_thresh: Umbral de puntuación para filtrar máscaras.
+        Parameters:
+        - result: Detection results returned by the model.
+        - score_thresh: Score threshold for filtering masks.
 
-        Retorna:
-        - inst_masks: Máscaras de instancias filtradas.
+        Returns:
+        - inst_masks: Filtered instance masks.
         """
-        # Asigna el resultado a la variable linea_data
+        # Assign the result to the variable linea_data
         linea_data = result
 
-        # Extrae los cuadros delimitadores (bounding boxes) y máscaras del resultado
+        # Extract bounding boxes and masks from the result
         bbox, masks = linea_data[0][0], linea_data[1][0]
 
-        # Filtra las máscaras basándose en el umbral de puntuación
-        # Solo incluye máscaras donde la puntuación del cuadro delimitador correspondiente es mayor que el umbral de puntuación
+        # Filter masks based on the score threshold
+        # Only include masks where the score of the corresponding bounding box is greater than the score threshold
         inst_masks = list(itertools.compress(masks, ((bbox[:, 4] > score_thresh).tolist())))
         
-        # Retorna las máscaras de instancias filtradas
+        # Return the filtered instance masks
         return inst_masks
 
     @staticmethod
     def interpolate(line_ds, inter_type='linear'):
         """
-        Interpola una serie de datos.
+        Interpolate a data series.
 
-        Parámetros:
-        - line_ds: Serie de datos predicha.
-        - inter_type: Tipo de interpolación ('linear' o 'cubic_spline').
+        Parameters:
+        - line_ds: Predicted data series.
+        - inter_type: Type of interpolation ('linear' or 'cubic_spline').
 
-        Retorna:
-        - inter_line_ds: Lista de objetos de interpolación para cada línea en la máscara.
+        Returns:
+        - inter_line_ds: List of interpolation objects for each line in the mask.
         """
-        # Inicializa listas para almacenar coordenadas x e y
+        # Initialize lists to store x and y coordinates
         x, y = [], []
 
-        # Extrae coordenadas x e y de la serie de datos
+        # Extract x and y coordinates from the data series
         for pt in line_ds:
             x.append(pt['x'])
             y.append(pt['y'])
 
-        # Elimina duplicados
+        # Remove duplicates
         unique_x, unique_y = [], []
         for i in range(len(x)):
             if x.count(x[i]) == 1:
                 unique_x.append(int(x[i]))
                 unique_y.append(int(y[i]))
 
-        # Si hay menos de 2 coordenadas x únicas, retorna la serie de datos original
+        # If there are fewer than 2 unique x coordinates, return the original data series
         if len(unique_x) < 2:
             return line_ds
 
-        # Realiza la interpolación
+        # Perform interpolation
         if inter_type == 'linear':
-            # Interpolación lineal
+            # Linear interpolation
             inter = interp1d(unique_x, unique_y)
         elif inter_type == 'cubic_spline':
-            # Interpolación de spline cúbico
+            # Cubic spline interpolation
             inter = CubicSpline(unique_x, unique_y)
 
-        # Inicializa la lista para almacenar la serie de datos interpolada
+        # Initialize the list to store the interpolated data series
         inter_line_ds = []
         x_min, x_max = min(unique_x), max(unique_x)
 
-        # Genera puntos interpolados para cada x en el rango de x_min a x_max
+        # Generate interpolated points for each x in the range from x_min to x_max
         for x in range(x_min, x_max + 1):
             inter_line_ds.append({"x": x, "y": int(inter(x))})
 
-        # Retorna la serie de datos interpolada
+        # Return the interpolated data series
         return inter_line_ds
 
     def get_dataseries(self, img, mask_kp_sample_interval=10,inter_type='linear' ,return_masks=False):
         """
-        Extrae series de datos de líneas de una imagen de gráficos.
+        Extract line data series from a chart image.
 
-        Parámetros:
-        - img: Imagen de gráfico en formato de array de numpy (3 canales).
-        - mask_kp_sample_interval: Intervalo para muestrear puntos de la máscara de línea predicha para obtener la serie de datos.
-        - return_masks: Si es True, retorna las máscaras junto con las series de datos.
+        Parameters:
+        - img: Chart image in numpy array format (3 channels).
+        - mask_kp_sample_interval: Interval for sampling points from the predicted line mask to obtain the data series.
+        - return_masks: If True, return the masks along with the data series.
 
-        Retorna:
-        - pred_ds: Series de datos de líneas en el formato especificado (lista de líneas, cada una como lista de puntos {x:, y:}).
-        - inst_masks (opcional): Máscaras de instancias si return_masks es True.
+        Returns:
+        - pred_ds: Line data series in the specified format (list of lines, each as a list of points {x:, y:}).
+        - inst_masks (optional): Instance masks if return_masks is True.
         """
-        # Obtiene máscaras de instancias usando la inferencia
+        # Get instance masks using inference
         inst_masks = self.do_instance(img, score_thr=0.3)
         
-        # Convierte las máscaras de instancias a formato uint8 y las multiplica por 255
+        # Convert instance masks to uint8 format and multiply by 255
         inst_masks = [line_mask.astype(np.uint8) * 255 for line_mask in inst_masks]
 
-        # Extrae la serie de datos de la línea a partir de las máscaras
+        # Extract the line data series from the masks
         pred_ds = []
         for line_mask in inst_masks:
-            # Obtiene el rango x de la línea de la máscara
+            # Get the x range of the line from the mask
             x_range = utils.get_xrange(line_mask)
             
-            # Obtiene puntos clave (keypoints) de la máscara de línea usando el intervalo especificado
+            # Get keypoints from the line mask using the specified interval
             line_ds = utils.get_kp(line_mask, interval=mask_kp_sample_interval, x_range=x_range, get_num_lines=False, get_center=True)
             
-            # Realiza la interpolación en la serie de datos de línea
+            # Perform interpolation on the line data series
             line_ds = self.interpolate(line_ds, inter_type=inter_type)
 
-            # Añade la serie de datos interpolada a la lista de series de datos predichas
+            # Add the interpolated data series to the list of predicted data series
             pred_ds.append(line_ds)
 
-        # Retorna la serie de datos predicha y, opcionalmente, las máscaras de instancias
+        # Return the predicted data series and, optionally, the instance masks
         return (pred_ds, inst_masks) if return_masks else pred_ds

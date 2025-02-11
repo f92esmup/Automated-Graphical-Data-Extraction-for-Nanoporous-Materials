@@ -18,7 +18,7 @@ sys.path.append('./Image_detection/Line_detection')
 from Image_detection.Line_detection.utils import process_image, save_and_plot_data
 from Image_detection.Line_detection.BB_Inference import LineInference
 #from Image_detection.Line_detection.mmdetection.mmdet.apis import init_detector, inference_detector
-from AI.Gemini.CEImage import GeminiImageProcessor
+from MLmanager.Gemini.CEImage import GeminiImageProcessor
 import csv
 
 class ImageProcessor:

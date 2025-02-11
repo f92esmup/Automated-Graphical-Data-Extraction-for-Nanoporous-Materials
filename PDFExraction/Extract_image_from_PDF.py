@@ -6,7 +6,7 @@ import os
 from pdf2image import convert_from_path, pdfinfo_from_path  # Updated import
 from supervision import BoxAnnotator  # Updated import
 from PyPDF2 import PdfReader
-from AI.Gemini.Chart_Classification import ChartClassification  # Import the ChartClassification class
+from MLmanager.Gemini.Chart_Classification import ChartClassification  # Import the ChartClassification class
 from tqdm import tqdm  # Add tqdm import
 
 # Set Hugging Face API key

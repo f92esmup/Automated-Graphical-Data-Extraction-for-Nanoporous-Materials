@@ -1,19 +1,16 @@
-# Usa una imagen base con Git instalado
+# Use a base image with Git installed
 FROM python:3.11
 
-# Establece la zona horaria
+# Set the timezone
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-# Instala Git y otras dependencias
+
+# Install Git and other dependencies
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y poppler-utils \
     && apt-get install -y libgl1-mesa-glx
 
-
-
-
-
-#### REQUERIMIENTOS DE LA APLICACIÓN ####
+#### APPLICATION REQUIREMENTS ####
 # Upgrade pip to the latest version
 RUN pip install --upgrade pip
 
@@ -41,17 +38,14 @@ RUN pip install torch torchvision torchaudio \
 
 ###########################################
 
-
-
-# Copia los archivos de la aplicación en el contenedor
+# Copy application files into the container
 COPY . /CICProject
-#git clone https://f92esmup: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@github.com/f92esmup/CICProject.git
 
-# Establece el directorio de trabajo al directorio copiado
+# Set the working directory to the copied directory
 WORKDIR /CICProject
 
 # Downloads the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python Download_weights_configs.py
 
-# Especifica el comando para ejecutar tu aplicación
+# Specify the command to run your application
 CMD ["python", "main.py"]

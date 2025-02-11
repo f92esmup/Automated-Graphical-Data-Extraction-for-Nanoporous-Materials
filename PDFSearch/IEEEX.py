@@ -8,7 +8,7 @@ def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_yea
     args = []
 
     base_url = "https://ieeexploreapi.ieee.org/api/v1/search/articles"
-    api_key = "445cefmjypbfptjgnzgtwzpt"  # Reemplaza con tu clave de API de IEEE Xplore
+    api_key = "445cefmjypbfptjgnzgtwzpt"  # Replace with your IEEE Xplore API key
 
     params = {
         "apikey": api_key,
@@ -16,27 +16,27 @@ def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_yea
         "max_records": max_results,
         "start_year": start_year,
         "end_year": end_year,
-        "format": "json"  # Solicitar la respuesta en formato JSON
+        "format": "json"  # Request the response in JSON format
     }
 
     response = requests.get(base_url, params=params)
 
-    # Imprimir la respuesta para depuración
+    # Print the response for debugging
     print("Status Code:", response.status_code)
     print("Response Text:", response.text)
 
     if response.status_code == 403:
-        print("Error: Developer Inactive. Verifica que tu clave de API está activa.")
+        print("Error: Developer Inactive. Verify that your API key is active.")
         return
 
     if response.status_code != 200:
-        print("Error en la solicitud:", response.status_code)
+        print("Request error:", response.status_code)
         return
 
     try:
         data = response.json()
     except requests.exceptions.JSONDecodeError as e:
-        print("Error al decodificar JSON:", e)
+        print("Error decoding JSON:", e)
         return
 
     for article in data.get('articles', []):
@@ -52,7 +52,7 @@ def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_yea
 
         args.append(paper_info)
 
-        # Mostrar los metadatos de forma bonita
+        # Display metadata in a readable format
         print(f"Title: {paper_info['name']}")
         print(f"DOI: {paper_info['doi']}")
         print(f"PDF Name: {paper_info['pdf_name']}")
@@ -62,7 +62,7 @@ def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_yea
         print(f"Abstract: {paper_info['abstract']}")
         print()
 
-        # Descargar el PDF
+        # Download the PDF
         pdf_url = article.get('pdf_url', None)
         if pdf_url:
             pdf_response = requests.get(pdf_url)
@@ -70,9 +70,9 @@ def download_ieee_papers(query, dwn_dir, max_results=1, start_year=None, end_yea
                 pdf_filename = os.path.join(dwn_dir, paper_info['pdf_name'])
                 with open(pdf_filename, 'wb') as pdf_file:
                     pdf_file.write(pdf_response.content)
-                print(f"PDF descargado: {pdf_filename}")
+                print(f"PDF downloaded: {pdf_filename}")
             else:
-                print(f"Error al descargar el PDF: {pdf_response.status_code}")
+                print(f"Error downloading the PDF: {pdf_response.status_code}")
 
     return args
 

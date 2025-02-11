@@ -13,15 +13,15 @@ from bresenham import bresenham
 ##############################################################
 def process_image(inference,image_path,mask_kp_sample_interval=10 ,inter_type='linear',eliminate_duplicates=False):
     """
-    Procesa una imagen para obtener la serie de datos de línea.
+    Processes an image to obtain the line data series.
     """
-    # Carga la imagen en formato BGR
+    # Load the image in BGR format
     image = cv2.imread(image_path)
     
-    # Obtiene la serie de datos de la línea usando la instancia de inferencia
+    # Get the line data series using the inference instance
     line_dataseries = inference.get_dataseries(image, mask_kp_sample_interval=mask_kp_sample_interval,inter_type=inter_type)
     
-    # Convierte y limpia los puntos si es necesario
+    # Convert and clean points if necessary
     line_dataseries = convert_points(line_dataseries)
     
     if eliminate_duplicates:
@@ -31,74 +31,68 @@ def process_image(inference,image_path,mask_kp_sample_interval=10 ,inter_type='l
 
 def save_and_plot_data(line_dataseries, image_path,plot=False, save_path='./data/Line_output/'):
     """
-    Guarda la serie de datos en un archivo CSV y genera un gráfico.
+    Saves the data series to a CSV file and generates a plot.
     """
-    # Comprueba si el directorio save_path existe y si no, lo crea
+    # Check if the save_path directory exists, if not, create it
     if not os.path.exists(save_path):
         os.makedirs(save_path)
         
-    # Obtiene el nombre del archivo sin la extensión
+    # Get the file name without the extension
     name = image_path.split('/')[-1].split('.')[0]
     
-    # Guarda la serie de datos en un archivo CSV
+    # Save the data series to a CSV file
     get_csv_data(line_dataseries,save_path, name)
     
-    # Genera el gráfico de la serie de datos
+    # Generate the data series plot
     if plot:
         plot_line(line_dataseries)
 
 def draw_lines_on_image(image_path, line_dataseries, output_dir=None):
  
-    # Cargar la imagen
+    # Load the image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"Error: No se pudo cargar la imagen en {image_path}.")
+        print(f"Error: Could not load the image at {image_path}.")
         return
 
-    # Dibujar cada línea en la imagen con un color diferente
+    # Draw each line on the image with a different color
     for line in line_dataseries:
-        # Generar un color aleatorio para cada línea
+        # Generate a random color for each line
         color = (np.random.randint(0, 256), np.random.randint(0, 256), np.random.randint(0, 256))
         
         for i in range(len(line) - 1):
-            # Extraer los puntos consecutivos (x1, y1) y (x2, y2)
+            # Extract consecutive points (x1, y1) and (x2, y2)
             (x1, y1) = line[i]
             (x2, y2) = line[i + 1]
             cv2.line(image, (x1, y1), (x2, y2), color, 2)
 
-    # Guardar o mostrar la imagen
+    # Save or display the image
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f"lines_{os.path.basename(image_path)}")
         cv2.imwrite(output_path, image)
-        print(f"Imagen con líneas guardada en: {output_path}")
+        print(f"Image with lines saved at: {output_path}")
     else:
-        cv2.imshow("Imagen con Líneas", image)
+        cv2.imshow("Image with Lines", image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-
-
-
-
 def get_images_path(dir='./'):
-    # Lista todos los archivos en el directorio
+    # List all files in the directory
     files = os.listdir(dir)
     
-    # Filtra solo los archivos (excluye directorios)
-    # List comprehension to filter the list 'archivos' [nueva_lista] = [expresión for elemento in secuencia if condición ]
-    # 'f' iterates over each element in 'archivos'
-    # 'os.path.join(directorio, f)' constructs the full path of each file
+    # Filter only files (exclude directories)
+    # List comprehension to filter the list 'files' [new_list] = [expression for element in sequence if condition]
+    # 'f' iterates over each element in 'files'
+    # 'os.path.join(dir, f)' constructs the full path of each file
     # 'os.path.isfile()' checks if the constructed path is a regular file
-    # Only files are included in the new 'archivos' list
-    #archivos = [f for f in archivos if os.path.isfile(os.path.join(directorio, f))]
+    # Only files are included in the new 'files' list
 
-
-    # Filtra solo los archivos que son imágenes (extensiones .png, .jpg, .jpeg, .gif)
+    # Filter only files that are images (extensions .png, .jpg, .jpeg, .gif)
     # os.path.splitext() divides the name into a root and an extension like ('image1', '.png') which is a tuple.
     # 'ext' is the extension part of the tuple
     # 'ext.lower()' converts the extension to lowercase PNG -> png.
-    # 'os.path.join(directorio, file)' constructs the full path of each file.
+    # 'os.path.join(dir, file)' constructs the full path of each file.
 
     image_extension = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif','.tiff', '.webp')
 
@@ -122,10 +116,8 @@ def get_csv_data(Line_dataseries,save_path,name="data"):
             for pt in line:
                 archivo.writerow([i, pt[0], pt[1]])
 
-
     return
 ##############################################################
-
 
 ###############-------------------##################
 def get_xrange(bin_line_mask): # bin_line_mask is a binary image
@@ -200,8 +192,6 @@ def get_interp_points(ptA, ptB, thickness=1):
     return inter_points
 ###############--------------------##################
 
-
-
 # Functions for transforming data
 
 def plot_line(line_dataseries):
@@ -229,7 +219,6 @@ def plot_line(line_dataseries):
         print(e)
     return
 
-
 def convert_points(data):
     convert = []
     #data is a list of list of dictionaries so:
@@ -244,7 +233,6 @@ def convert_points(data):
     #Reorder data: the syntax is sequence[start:stop:step].
     #convert = [line[::-1] for line in convert]
     return convert
-
 
 def elimanate_duplicates(Line_dataseries, threshold=3):
     #mmdetection use the same length for all the lines in the same chart.

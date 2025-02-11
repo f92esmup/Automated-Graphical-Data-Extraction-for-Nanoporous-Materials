@@ -11,7 +11,6 @@ from PDFExraction.Extract_image_from_PDF import ImageInference
 # Determine the device to use
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-
 # Argument parser configuration
 parser = argparse.ArgumentParser(description="Run various tasks.")
 #parser.add_argument('--cdweights', default='./Image_detection/weights/work_dirs/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss/checkpoint.pth', type=str, help="Path to the model ChartDete weights file.")
@@ -35,7 +34,7 @@ parser.add_argument('--model_dir', default='./AI/FLorence-Demo/florence2-lora', 
 parser.add_argument('--search_method', action='store_true', default=False, help="Enable the search method.")
 parser.add_argument('--classification', action='store_true', default=False, help="Enable classification mode.")
 # Parse API arguments
-parser.add_argument('--gemini_api_key', default='AIzaSyDFuwrnPunjaEG5WlzjycQ75km-w2MFsgc', type=str, help="API key for GEMINI.")
+parser.add_argument('--gemini_api_key', default=None, type=str, help="API key for GEMINI.")
 parser.add_argument('--ieex_api_key', default=None, type=str, help="API key for IEEX.")
 parser.add_argument('--scopus_api_key', default=None, type=str, help="API key for SCOPUS.")
 # Parse arguments

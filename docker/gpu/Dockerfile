@@ -1,11 +1,11 @@
-# Usa una imagen base con soporte para PyTorch y CUDA
+# Use a base image with support for PyTorch and CUDA
 FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04
 
 # Set the timezone
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Instala las dependencias necesarias
+# Install necessary dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     build-essential \
@@ -28,18 +28,19 @@ RUN apt-get update && apt-get install -y \
     poppler-utils \ 
     && rm -rf /var/lib/apt/lists/*
 
-#Update GCC and G++
+# Update GCC and G++
 RUN apt-get update && apt-get install -y software-properties-common && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
     apt-get install -y gcc-9 g++-9 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60
-# Instala Rust y Cargo
+
+# Install Rust and Cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Descarga e instala Python 3.9
+# Download and install Python 3.9
 RUN wget https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz \
     && tar xzf Python-3.9.7.tgz \
     && cd Python-3.9.7 \
@@ -48,27 +49,27 @@ RUN wget https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz \
     && cd .. \
     && rm -rf Python-3.9.7 Python-3.9.7.tgz
 
-# Establece Python 3.9 como predeterminado y asegúrate de que pip esté disponible
+# Set Python 3.9 as default and ensure pip is available
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.9 1 \
     && ln -s /usr/local/bin/pip3.9 /usr/local/bin/pip
 
-# Asegúrate de que pip esté disponible en el PATH
+# Ensure pip is available in the PATH
 ENV PATH="/usr/local/bin:${PATH}"
 
-# Instala pip explícitamente
+# Install pip explicitly
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.9 get-pip.py && rm get-pip.py
 
-# Instala lsb-release antes de actualizar pip
+# Install lsb-release before upgrading pip
 RUN apt-get update && apt-get install -y lsb-release
 
 # Upgrade pip to the latest version using python3.9
 RUN python3.9 -m pip install --upgrade pip
 
-# Instala distro después de actualizar pip
+# Install distro after upgrading pip
 RUN python3.9 -m pip install distro
 
-# Instala los paquetes de Python requeridos en el entorno virtual usando pip
-RUN pip install torch torchvision torchaudio \
+# Install required Python packages in the virtual environment using pip
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu122 \
     && pip install -q transformers timm einops peft \
     && pip install Pillow \
     && pip install supervision \
@@ -85,19 +86,19 @@ RUN pip install torch torchvision torchaudio \
     && pip install pandas \
     && pip install -U openmim \
     && pip install --upgrade setuptools \
-    && pip install mmcv-full \
+    && pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu122/torch1.9.0/index.html \
     && pip install pycocotools
 
 RUN pip install google.generativeai
 
-# Copia los archivos de la aplicación al contenedor
+# Copy application files into the container
 COPY . /CICProject
 
-# Establece el directorio de trabajo
+# Set the working directory
 WORKDIR /CICProject
 
-# Descarga los pesos y archivos de configuración necesarios ejecutando el script Download_weights_configs.py
+# Download the necessary weights and configuration files by running the Download_weights_configs.py script
 RUN python3.9 Download_weights_configs.py
 
-# Especifica el comando para ejecutar tu aplicación
+# Specify the command to run your application
 CMD ["python3.9", "main.py"]
