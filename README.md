@@ -1,8 +1,32 @@
-# CICProject
+```bash
+# Install system dependencies
+# For MacOS, install poppler using Homebrew
+brew install poppler
 
-## ToDo's
-1. buscar modelos de clasificación para agrupar imagenes.
-2. Pensar como voy a implementar la función de extracción de texto.
-3. Como relacionar el texto con las imagenes.
-4. Como segmentar imagenes.
-5. y ya pasar a image detection.
+# Upgrade pip
+pip install --upgrade pip
+
+# Install Python packages
+pip install torch torchvision torchaudio
+pip install -U openmim
+pip install --upgrade setuptools
+mim install mmcv-full
+
+pip install -q transformers timm einops peft
+pip install Pillow
+pip install supervision
+
+pip install bibtexparser
+pip install PyPDF2
+pip install arxiv
+pip install beautifulsoup4
+pip install undetected_chromedriver
+pip install crossref_commons
+pip install pyChainedProxy
+pip install terminaltables
+pip install bresenham
+pip install pdf2image
+pip install pandas
+pip install google.generativeai
+pip install pycocotools
+```
